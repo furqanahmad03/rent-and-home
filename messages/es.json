@@ -1,0 +1,36 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "language": "Idioma"
+  },
+  "navbar": {
+    "home": "Inicio",
+    "buy": "Comprar",
+    "rent": "Alquilar",
+    "sell": "Vender",
+    "favorites": "Favoritos",
+    "profile": "Perfil",
+    "dashboard": "Panel",
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión"
+  },
+  "footer": {
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "copyright": "© 2024 Rent & Home. Todos los derechos reservados."
+  },
+  "hero": {
+    "title": "Encuentra Bienes Raíces y Obtén Tu Espacio Soñado",
+    "subtitle": "Compra o alquila casas cómodas y hermosas en muchos lugares",
+    "featuredHouse": {
+      "title": "Casa Moderna Negra",
+      "address": "Calle Nueva York 1260"
+    },
+    "search": {
+      "placeholder": "Ingresa una dirección, vecindario, ciudad o código postal",
+      "signInRequired": "Inicia sesión primero para buscar casas para ti..."
+    }
+  }
+} 

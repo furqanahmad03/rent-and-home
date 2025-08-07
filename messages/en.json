@@ -1,0 +1,36 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "language": "Language"
+  },
+  "navbar": {
+    "home": "Home",
+    "buy": "Buy",
+    "rent": "Rent",
+    "sell": "Sell",
+    "favorites": "Favorites",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 Rent & Home. All rights reserved."
+  },
+  "hero": {
+    "title": "Find Real Estate and Get Your Dream Space",
+    "subtitle": "Buy or rent comfortable and beautiful houses in many places",
+    "featuredHouse": {
+      "title": "Black Modern House",
+      "address": "New York Street 1260"
+    },
+    "search": {
+      "placeholder": "Enter an address, neighborhood, city, or ZIP code",
+      "signInRequired": "Sign in first to search houses for you..."
+    }
+  }
+} 

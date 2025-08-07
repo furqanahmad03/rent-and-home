@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button } from './ui/button'
-import { Heart, User, LogOut, Eye, EyeOff, Mail, Lock, ChevronDown, LayoutDashboard, Settings } from "lucide-react";
+import { Heart, User, LogOut, Eye, EyeOff, Mail, Lock, ChevronDown, LayoutDashboard, Settings, Globe } from "lucide-react";
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -28,6 +30,7 @@ const navLinks = [
 ];
 
 const Navbar = () => {
+  const t = useTranslations('navbar');
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -37,6 +40,25 @@ const Navbar = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Language switcher logic
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'pt', name: 'Português' },
+  ];
+
+  const handleLanguageChange = (newLocale: string) => {
+    // Remove the current locale from the pathname
+    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+    
+    // Navigate to the new locale
+    router.push(`/${newLocale}${pathWithoutLocale}`);
+  };
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -198,13 +220,36 @@ const Navbar = () => {
                 href={item.href}
                 className="text-black font-medium px-2 py-2 rounded-md transition-colors hover:text-blue-600"
               >
-                {item.label}
+                {item.label === "Buy" ? t('buy') : 
+                 item.label === "Rent" ? t('rent') : 
+                 item.label}
               </Link>
             ))}
           </div>
 
           {/* Right side buttons */}
           <div className="flex items-center gap-4">
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  {languages.find(lang => lang.code === locale)?.name || 'English'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {languages.map((language) => (
+                  <DropdownMenuItem
+                    key={language.code}
+                    onClick={() => handleLanguageChange(language.code)}
+                    className={locale === language.code ? 'bg-accent' : ''}
+                  >
+                    {language.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Authentication */}
             {!mounted || status === 'loading' ? (
               <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
@@ -227,33 +272,33 @@ const Navbar = () => {
                         </span>
                         <span className="text-xs text-gray-500">
                           {session.user?.email}
-            </span>
+                        </span>
                       </div>
-                            </div>
+                    </div>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="flex items-center gap-2 w-full">
                       <LayoutDashboard className="h-4 w-4" />
-                      Dashboard
+                      {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center gap-2 w-full">
                       <User className="h-4 w-4" />
-                      Profile
+                      {t('profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/favorites" className="flex items-center gap-2 w-full">
                       <Heart className="h-4 w-4" />
-                      Favorites
+                      {t('favorites')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} variant="destructive" className="flex items-center gap-2">
                     <LogOut className="h-4 w-4" />
-                    Sign out
+                    {t('signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -262,7 +307,7 @@ const Navbar = () => {
                 <AlertDialogTrigger asChild>
                   <Button variant="outline" size="sm">
                     <User className="h-4 w-4 mr-2" />
-                    Sign In
+                    {t('signIn')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-md">
@@ -315,7 +360,7 @@ const Navbar = () => {
                           placeholder="Enter your email"
                         />
                       </div>
-          </div>
+                    </div>
                     <div>
                       <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                         Password
@@ -337,7 +382,7 @@ const Navbar = () => {
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
+                        >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                       </div>
@@ -353,7 +398,7 @@ const Navbar = () => {
                           : "Signing in..."
                         : isSignUp
                           ? "Create account"
-                          : "Sign in"}
+                          : t('signIn')}
                     </Button>
                     <div className="text-center text-sm text-gray-600">
                       {isSignUp ? (
@@ -366,7 +411,7 @@ const Navbar = () => {
                               setIsSignUp(false);
                             }}
                           >
-                            Sign in
+                            {t('signIn')}
                           </button>
                         </>
                       ) : (

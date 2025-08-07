@@ -3,8 +3,11 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { GrHome } from "react-icons/gr";
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
+  const t = useTranslations('footer');
+  
   return (
     <footer className={cn("relative w-full px-20 bg-white border-t border-gray-200 pt-8 pb-0 flex flex-col items-center text-center z-10")}>  
       {/* Legal/Disclaimer Section */}
@@ -46,7 +49,7 @@ const Footer = () => {
       {/* Main Footer Row */}
       <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 mb-4">
         <span className="font-bold text-4xl text-blue-700 flex items-center gap-2">
-          Stickball
+          Rent&Home
         </span>
         <span className="italic text-2xl text-gray-700 ml-2">Follow US:</span>
         <div className="flex gap-3 text-3xl ml-2">
@@ -56,7 +59,7 @@ const Footer = () => {
           <span className="text-gray-400">-</span>
           <a href="#" aria-label="Twitter" className="hover:text-blue-400"><FaTwitter /></a>
         </div>
-        <span className="italic text-2xl text-gray-700 ml-2">© 2019-2022 Stickball</span>
+        <span className="italic text-2xl text-gray-700 ml-2">{t('copyright')}</span>
         <span className="ml-1 text-blue-700 text-4xl"><GrHome /></span>
         {/* Optionally, add a house icon or SVG here if needed */}
       </div>

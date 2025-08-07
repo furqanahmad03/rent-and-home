@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useTranslations } from 'next-intl';
 
 export function HeroSection() {
+  const t = useTranslations('hero');
   const { data: session } = useSession();
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
@@ -26,10 +28,10 @@ export function HeroSection() {
           {/* Left Side - Text Content */}
           <div className="space-y-8">
             <h1 className="text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-              Find Real Estate and Get Your Dream Space
+              {t('title')}
             </h1>
             <p className="text-2xl text-slate-800 leading-relaxed max-w-lg">
-              Buy or rent comfortable and beautiful houses in many places
+              {t('subtitle')}
             </p>
           </div>
           {/* Right Side - Image with Overlay */}
@@ -49,10 +51,10 @@ export function HeroSection() {
               </div>
               {/* Information Overlay */}
               <div className="absolute top-8 right-8 bg-gray-800/95 backdrop-blur-sm rounded-2xl p-6 max-w-56 shadow-xl">
-                <h3 className="text-white font-bold text-lg mb-3">Black Modern House</h3>
+                <h3 className="text-white font-bold text-lg mb-3">{t('featuredHouse.title')}</h3>
                 <div className="flex items-center text-white text-base">
                   <div className="w-5 h-5 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
-                  <span className="font-medium">New York Street 1260</span>
+                  <span className="font-medium">{t('featuredHouse.address')}</span>
                 </div>
               </div>
             </div>
@@ -65,7 +67,7 @@ export function HeroSection() {
               type="text"
               className="flex-1 bg-transparent outline-none border-none text-lg px-2 py-2"
               disabled={!session}
-              placeholder={`${session ? 'Enter an address, neighborhood, city, or ZIP code' : 'Sign in first to search houses for you...'}`}
+              placeholder={session ? t('search.placeholder') : t('search.signInRequired')}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}

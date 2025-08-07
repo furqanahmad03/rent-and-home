@@ -1,0 +1,36 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "language": "Idioma"
+  },
+  "navbar": {
+    "home": "Início",
+    "buy": "Comprar",
+    "rent": "Alugar",
+    "sell": "Vender",
+    "favorites": "Favoritos",
+    "profile": "Perfil",
+    "dashboard": "Painel",
+    "signIn": "Entrar",
+    "signOut": "Sair"
+  },
+  "footer": {
+    "about": "Sobre",
+    "contact": "Contato",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "copyright": "© 2024 Rent & Home. Todos os direitos reservados."
+  },
+  "hero": {
+    "title": "Encontre Imóveis e Obtenha Seu Espaço dos Sonhos",
+    "subtitle": "Compre ou alugue casas confortáveis e bonitas em muitos lugares",
+    "featuredHouse": {
+      "title": "Casa Moderna Preta",
+      "address": "Rua Nova York 1260"
+    },
+    "search": {
+      "placeholder": "Digite um endereço, bairro, cidade ou CEP",
+      "signInRequired": "Faça login primeiro para procurar casas para você..."
+    }
+  }
+} 
