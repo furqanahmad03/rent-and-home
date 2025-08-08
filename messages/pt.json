@@ -78,8 +78,11 @@
   "homepage": {
     "homesForYou": "Casas para você",
     "browseHomes": "Explorar casas",
-    "seeOptions": "Ver suas opções",
+    "seeOptions": "Ver opções",
     "findRentals": "Encontrar aluguéis",
+    "signInToBrowseHomes": "Por favor, faça login para explorar casas",
+    "signInToSeeOptions": "Por favor, faça login para ver opções de venda",
+    "signInToFindRentals": "Por favor, faça login para encontrar aluguéis",
     "buyHome": {
       "title": "Comprar uma casa",
       "description": "Encontre seu lugar com uma experiência fotográfica imersiva e as listagens mais completas, incluindo coisas que você não encontrará em nenhum outro lugar."
@@ -133,7 +136,9 @@
     "signedOut": "Logout realizado com sucesso!",
     "signingInAuto": "Fazendo login automaticamente...",
     "creatingAccountLoading": "Criando sua conta...",
-    "signingInLoading": "Fazendo login..."
+    "signingInLoading": "Fazendo login...",
+    "errorOccurred": "Ocorreu um erro. Por favor, tente novamente.",
+    "successfullySignedIn": "Login realizado com sucesso!"
   },
   "dashboard": {
     "title": "Painel",
@@ -203,8 +208,14 @@
     },
     "cancel": "Cancelar",
     "saving": "Salvando...",
-    "sold": "Vendida",
-    "saveChanges": "Salvar Alterações"
+    "sold": "Vendido",
+    "saveChanges": "Salvar Alterações",
+    "errorAddingHouse": "Erro ao adicionar casa: {error}",
+    "failedToAddHouse": "Falha ao adicionar casa. Por favor, tente novamente.",
+    "errorUpdatingHouse": "Erro ao atualizar casa: {error}",
+    "failedToUpdateHouse": "Falha ao atualizar casa. Por favor, tente novamente.",
+    "errorDeletingHouse": "Erro ao excluir casa: {error}",
+    "failedToDeleteHouse": "Falha ao excluir casa. Por favor, tente novamente."
   },
   "profile": {
     "title": "Perfil",
@@ -249,16 +260,22 @@
     "verified": "Verificado",
     "accountType": "Tipo de Conta",
     "standard": "Padrão",
-    "lastUpdated": "Última Atualização"
+    "lastUpdated": "Última Atualização",
+    "currentPasswordRequired": "A senha atual é necessária para alterar a senha",
+    "newPasswordMinLength": "A nova senha deve ter pelo menos 6 caracteres",
+    "passwordsDoNotMatch": "As novas senhas não coincidem",
+    "failedToUpdateProfile": "Falha ao atualizar o perfil"
   },
   "favorites": {
     "title": "Favoritos",
     "myFavorites": "Meus Favoritos",
     "noFavorites": "Ainda não há favoritos",
-    "startBrowsing": "Comece a navegar pelas propriedades para adicioná-las aos seus favoritos",
+    "startBrowsing": "Comece a explorar propriedades para adicioná-las aos seus favoritos",
     "removeFromFavorites": "Remover dos favoritos",
     "addedToFavorites": "Adicionado aos favoritos",
-    "favoritesCount": "Você tem {count} propriedade favorita{count, plural, one {} other {s}}."
+    "favoritesCount": "Você tem {count} propriedade favorita{count, plural, one {} other {s}}.",
+    "errorRemovingFromFavorites": "Erro ao remover dos favoritos: {error}",
+    "failedToRemoveFromFavorites": "Falha ao remover propriedade dos favoritos. Por favor, tente novamente."
   },
   "houses": {
     "title": "Propriedades",
@@ -305,12 +322,12 @@
       "backToListings": "Voltar aos Anúncios",
       "backToRentals": "Voltar aos Aluguéis",
       "viewAllPhotos": "Ver todas as fotos",
-      "photos": "foto",
-      "photosPlural": "fotos",
+      "photo": "foto",
+      "photos": "fotos",
       "allPhotos": "Todas as Fotos",
       "addToFavorites": "Adicionar aos favoritos",
       "removeFromFavorites": "Remover dos favoritos",
-      "cantFavoriteOwn": "Você não pode favoritar sua própria propriedade",
+      "cantFavoriteOwnProperty": "Você não pode favoritar sua própria propriedade",
       "noImages": "Sem imagens",
       "month": "mês",
       "total": "total",
@@ -323,6 +340,7 @@
       "built": "Construída",
       "description": "Descrição",
       "address": "Endereço",
+      "status": "Status",
       "type": "Tipo",
       "livingArea": "Área Habitável",
       "bedrooms": "Quartos",
@@ -350,7 +368,6 @@
       "perMonthOrTotal": "/ {status}",
       "listedOn": "Listada: {date}",
       "pricePerSqft": "${price}/m²",
-      "yearBuilt": "Construída em {year}",
       "removedFromFavorites": "Removido dos favoritos!",
       "addedToFavorites": "Adicionado aos favoritos!",
       "failedToUpdateFavorites": "Falha ao atualizar favoritos. Por favor tente novamente."

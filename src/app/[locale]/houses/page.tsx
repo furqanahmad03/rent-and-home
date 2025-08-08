@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useTranslations } from 'next-intl';
@@ -26,6 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import toast from 'react-hot-toast';
+import { useLocale } from "next-intl";
 
 const StaticMap = dynamic(() => import("@/components/StaticMap"), { ssr: false });
 
@@ -136,7 +137,7 @@ function ListingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const purpose = searchParams.get('purpose');
-
+  const locale = useLocale();
   const [houses, setHouses] = useState<House[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -151,24 +152,7 @@ function ListingPageContent() {
   const [propertyType, setPropertyType] = useState<string[]>([]);
   const [status, setStatus] = useState<string[]>([]);
 
-  // Fetch houses on component mount
-  useEffect(() => {
-    fetchHouses();
-  }, [purpose]);
-
-  // Fetch user's favorites if authenticated
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchFavorites();
-    }
-  }, [session]);
-
-  // Filter houses when search or filters change
-  useEffect(() => {
-    filterHouses(houses);
-  }, [search, price, area, bedrooms, bathrooms, propertyType, status, houses]);
-
-  const fetchHouses = async () => {
+  const fetchHouses = useCallback(async () => {
     try {
     setLoading(true);
       let url = '/api/houses';
@@ -191,23 +175,23 @@ function ListingPageContent() {
     } finally {
         setLoading(false);
     }
-  };
+  }, [purpose]);
 
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       const response = await fetch('/api/favorites');
       const data = await response.json();
       
       if (response.ok) {
-        setFavorites(data.data?.map((fav: any) => fav.houseId) || []);
+        setFavorites(data.data?.map((fav: { houseId: string }) => fav.houseId) || []);
       }
     } catch (error) {
       console.error('Error fetching favorites:', error);
     }
-  };
+  }, []);
 
-  function filterHouses(houses: House[]) {
-    let filtered = houses.filter(house => {
+  const filterHouses = useCallback((houses: House[]) => {
+    const filtered = houses.filter(house => {
       // Search filter
       const searchLower = search.toLowerCase();
       const matchesSearch = !search || 
@@ -239,7 +223,24 @@ function ListingPageContent() {
     });
 
     setFiltered(filtered);
-  }
+  }, [search, price, area, bedrooms, bathrooms, propertyType, status]);
+
+  // Fetch houses on component mount
+  useEffect(() => {
+    fetchHouses();
+  }, [fetchHouses]);
+
+  // Fetch user's favorites if authenticated
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchFavorites();
+    }
+  }, [session, fetchFavorites]);
+
+  // Filter houses when search or filters change
+  useEffect(() => {
+    filterHouses(houses);
+  }, [filterHouses, houses]);
 
   function handleApplyFilters() {
     setFilterDialogOpen(false);
@@ -601,8 +602,8 @@ function ListingPageContent() {
                       </div>
                       {/* Action Button */}
                       <Button
-                        onClick={() => router.push(`/houses/${house.id}`)}
-                        className={`w-full text-xs md:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold md:py-1.5 py-1 !md:h-10 !h-6 rounded-sm shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-101 text-xs flex items-center justify-center ${house.homeStatus === 'RECENTLY_SOLD' ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        onClick={() => router.push(`/${locale}/houses/${house.id}`)}
+                        className={`w-full text-xs md:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold md:!py-2 !py-0.5 rounded-sm shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-101 text-xs flex items-center justify-center ${house.homeStatus === 'RECENTLY_SOLD' ? 'opacity-60 cursor-not-allowed' : ''}`}
                         disabled={house.homeStatus === 'RECENTLY_SOLD'}
                       >
                         <Eye className="md:w-2.5 md:h-2.5 w-2 h-2 md:mr-1 mr-0" />

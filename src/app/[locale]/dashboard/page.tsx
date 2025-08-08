@@ -220,14 +220,14 @@ export default function DashboardPage() {
         fetchUserHouses(); // Refresh the data
       } else {
         const error = await response.json();
-        toast.error(`Error adding house: ${error.error}`, {
+        toast.error(t('errorAddingHouse', { error: error.error }), {
           icon: '❌',
           duration: 4000,
         });
       }
     } catch (error) {
       console.error('Error adding house:', error);
-      toast.error('Failed to add house. Please try again.', {
+              toast.error(t('failedToAddHouse'), {
         icon: '❌',
         duration: 4000,
       });
@@ -296,7 +296,7 @@ export default function DashboardPage() {
         );
         
         const error = await response.json();
-        toast.error(`Error updating house: ${error.error}`, {
+        toast.error(t('errorUpdatingHouse', { error: error.error }), {
           icon: '❌',
           duration: 4000,
         });
@@ -311,7 +311,7 @@ export default function DashboardPage() {
       );
       
       console.error('Error updating house:', error);
-      toast.error('Failed to update house. Please try again.', {
+              toast.error(t('failedToUpdateHouse'), {
         icon: '❌',
         duration: 4000,
       });
@@ -338,14 +338,14 @@ export default function DashboardPage() {
         fetchUserHouses(); // Refresh the data
       } else {
         const error = await response.json();
-        toast.error(`Error deleting house: ${error.error}`, {
+        toast.error(t('errorDeletingHouse', { error: error.error }), {
           icon: '❌',
           duration: 4000,
         });
       }
     } catch (error) {
       console.error('Error deleting house:', error);
-      toast.error('Failed to delete house. Please try again.', {
+              toast.error(t('failedToDeleteHouse'), {
         icon: '❌',
         duration: 4000,
       });

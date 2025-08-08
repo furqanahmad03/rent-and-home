@@ -161,14 +161,14 @@ export default function FavoritesPage() {
         setFavorites(prev => prev.filter(house => house.id !== houseId));
       } else {
         const error = await response.json();
-        toast.error(`Error removing from favorites: ${error.error}`, {
+        toast.error(t('errorRemovingFromFavorites', { error: error.error }), {
           icon: '❌',
           duration: 4000,
         });
       }
     } catch (error) {
       console.error('Error removing from favorites:', error);
-      toast.error('Failed to remove property from favorites. Please try again.', {
+              toast.error(t('failedToRemoveFromFavorites'), {
         icon: '❌',
         duration: 4000,
       });

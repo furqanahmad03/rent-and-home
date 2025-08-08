@@ -284,7 +284,7 @@ export default function Home() {
           <button
             onClick={() => {
               if (!session) {
-                toast.error('Please sign in to browse homes');
+                toast.error(t('signInToBrowseHomes'));
                 return;
               }
               window.location.href = '/houses?purpose=buy';
@@ -316,7 +316,7 @@ export default function Home() {
           <button
             onClick={() => {
               if (!session) {
-                toast.error('Please sign in to see selling options');
+                toast.error(t('signInToSeeOptions'));
                 return;
               }
               window.location.href = '/sell';
@@ -348,7 +348,7 @@ export default function Home() {
           <button
             onClick={() => {
               if (!session) {
-                toast.error('Please sign in to find rentals');
+                toast.error(t('signInToFindRentals'));
                 return;
               }
               window.location.href = '/houses?purpose=rent';

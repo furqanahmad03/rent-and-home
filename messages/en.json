@@ -80,6 +80,9 @@
     "browseHomes": "Browse homes",
     "seeOptions": "See your options",
     "findRentals": "Find rentals",
+    "signInToBrowseHomes": "Please sign in to browse homes",
+    "signInToSeeOptions": "Please sign in to see selling options",
+    "signInToFindRentals": "Please sign in to find rentals",
     "buyHome": {
       "title": "Buy a home",
       "description": "Find your place with an immersive photo experience and the most listings, including things you won't find anywhere else."
@@ -133,7 +136,9 @@
     "signedOut": "Successfully signed out!",
     "signingInAuto": "Signing you in automatically...",
     "creatingAccountLoading": "Creating your account...",
-    "signingInLoading": "Signing you in..."
+    "signingInLoading": "Signing you in...",
+    "errorOccurred": "An error occurred. Please try again.",
+    "successfullySignedIn": "Successfully signed in!"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -204,7 +209,13 @@
     "cancel": "Cancel",
     "saving": "Saving...",
     "sold": "Sold",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "errorAddingHouse": "Error adding house: {error}",
+    "failedToAddHouse": "Failed to add house. Please try again.",
+    "errorUpdatingHouse": "Error updating house: {error}",
+    "failedToUpdateHouse": "Failed to update house. Please try again.",
+    "errorDeletingHouse": "Error deleting house: {error}",
+    "failedToDeleteHouse": "Failed to delete house. Please try again."
   },
   "profile": {
     "title": "Profile",
@@ -249,7 +260,11 @@
     "verified": "Verified",
     "accountType": "Account Type",
     "standard": "Standard",
-    "lastUpdated": "Last Updated"
+    "lastUpdated": "Last Updated",
+    "currentPasswordRequired": "Current password is required to change password",
+    "newPasswordMinLength": "New password must be at least 6 characters long",
+    "passwordsDoNotMatch": "New passwords do not match",
+    "failedToUpdateProfile": "Failed to update profile"
   },
   "favorites": {
     "title": "Favorites",
@@ -258,7 +273,9 @@
     "startBrowsing": "Start browsing properties to add them to your favorites",
     "removeFromFavorites": "Remove from favorites",
     "addedToFavorites": "Added to favorites",
-    "favoritesCount": "You have {count} favorite propert{count, plural, one {y} other {ies}}."
+    "favoritesCount": "You have {count} favorite propert{count, plural, one {y} other {ies}}.",
+    "errorRemovingFromFavorites": "Error removing from favorites: {error}",
+    "failedToRemoveFromFavorites": "Failed to remove property from favorites. Please try again."
   },
       "houses": {
       "title": "Properties",

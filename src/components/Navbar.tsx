@@ -162,7 +162,7 @@ const Navbar = () => {
       } catch {
         // Dismiss loading toast
         toast.dismiss(loadingToast);
-        toast.error("An error occurred. Please try again.", {
+        toast.error(authT('errorOccurred'), {
           icon: '❌',
           duration: 4000,
         });
@@ -192,7 +192,7 @@ const Navbar = () => {
             duration: 4000,
           });
         } else {
-          toast.success("Successfully signed in!", {
+          toast.success(authT('successfullySignedIn'), {
             icon: '✅',
             duration: 3000,
           });
@@ -204,7 +204,7 @@ const Navbar = () => {
       } catch {
         // Dismiss loading toast
         toast.dismiss(loadingToast);
-        toast.error("An error occurred. Please try again.", {
+        toast.error(authT('errorOccurred'), {
           icon: '❌',
           duration: 4000,
         });

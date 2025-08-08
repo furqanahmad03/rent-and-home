@@ -78,8 +78,11 @@
   "homepage": {
     "homesForYou": "Casas para ti",
     "browseHomes": "Explorar casas",
-    "seeOptions": "Ver tus opciones",
+    "seeOptions": "Ver opciones",
     "findRentals": "Encontrar alquileres",
+    "signInToBrowseHomes": "Por favor, inicia sesión para explorar casas",
+    "signInToSeeOptions": "Por favor, inicia sesión para ver opciones de venta",
+    "signInToFindRentals": "Por favor, inicia sesión para encontrar alquileres",
     "buyHome": {
       "title": "Comprar una casa",
       "description": "Encuentra tu lugar con una experiencia fotográfica inmersiva y las listas más completas, incluyendo cosas que no encontrarás en ningún otro lugar."
@@ -133,7 +136,9 @@
     "signedOut": "¡Sesión cerrada exitosamente!",
     "signingInAuto": "Iniciando sesión automáticamente...",
     "creatingAccountLoading": "Creando tu cuenta...",
-    "signingInLoading": "Iniciando sesión..."
+    "signingInLoading": "Iniciando sesión...",
+    "errorOccurred": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "successfullySignedIn": "¡Sesión iniciada exitosamente!"
   },
   "dashboard": {
     "title": "Panel",
@@ -203,8 +208,14 @@
     },
     "cancel": "Cancelar",
     "saving": "Guardando...",
-    "sold": "Vendida",
-    "saveChanges": "Guardar Cambios"
+    "sold": "Vendido",
+    "saveChanges": "Guardar Cambios",
+    "errorAddingHouse": "Error al agregar casa: {error}",
+    "failedToAddHouse": "Error al agregar casa. Por favor, inténtalo de nuevo.",
+    "errorUpdatingHouse": "Error al actualizar casa: {error}",
+    "failedToUpdateHouse": "Error al actualizar casa. Por favor, inténtalo de nuevo.",
+    "errorDeletingHouse": "Error al eliminar casa: {error}",
+    "failedToDeleteHouse": "Error al eliminar casa. Por favor, inténtalo de nuevo."
   },
   "profile": {
     "title": "Perfil",
@@ -249,7 +260,11 @@
     "verified": "Verificado",
     "accountType": "Tipo de Cuenta",
     "standard": "Estándar",
-    "lastUpdated": "Última Actualización"
+    "lastUpdated": "Última Actualización",
+    "currentPasswordRequired": "La contraseña actual es requerida para cambiar la contraseña",
+    "newPasswordMinLength": "La nueva contraseña debe tener al menos 6 caracteres",
+    "passwordsDoNotMatch": "Las nuevas contraseñas no coinciden",
+    "failedToUpdateProfile": "Error al actualizar el perfil"
   },
   "favorites": {
     "title": "Favoritos",
@@ -258,7 +273,9 @@
     "startBrowsing": "Comienza a explorar propiedades para agregarlas a tus favoritos",
     "removeFromFavorites": "Eliminar de favoritos",
     "addedToFavorites": "Agregado a favoritos",
-    "favoritesCount": "Tienes {count} propiedad favorita{count, plural, one {} other {s}}."
+    "favoritesCount": "Tienes {count} propiedad favorita{count, plural, one {} other {s}}.",
+    "errorRemovingFromFavorites": "Error al eliminar de favoritos: {error}",
+    "failedToRemoveFromFavorites": "Error al eliminar la propiedad de favoritos. Por favor, inténtalo de nuevo."
   },
   "houses": {
     "title": "Propiedades",
@@ -305,12 +322,12 @@
       "backToListings": "Volver a Listados",
       "backToRentals": "Volver a Alquileres",
       "viewAllPhotos": "Ver todas las fotos",
-      "photos": "foto",
-      "photosPlural": "fotos",
+      "photo": "foto",
+      "photos": "fotos",
       "allPhotos": "Todas las Fotos",
       "addToFavorites": "Agregar a favoritos",
       "removeFromFavorites": "Eliminar de favoritos",
-      "cantFavoriteOwn": "No puedes favoritear tu propia propiedad",
+      "cantFavoriteOwnProperty": "No puedes favoritear tu propia propiedad",
       "noImages": "Sin imágenes",
       "month": "mes",
       "total": "total",
@@ -323,6 +340,7 @@
       "built": "Construida",
       "description": "Descripción",
       "address": "Dirección",
+      "status": "Estado",
       "type": "Tipo",
       "livingArea": "Área Habitable",
       "bedrooms": "Habitaciones",
@@ -350,7 +368,6 @@
       "perMonthOrTotal": "/ {status}",
       "listedOn": "Listada: {date}",
       "pricePerSqft": "${price}/pies²",
-      "yearBuilt": "Construida en {year}",
       "removedFromFavorites": "¡Eliminado de favoritos!",
       "addedToFavorites": "¡Agregado a favoritos!",
       "failedToUpdateFavorites": "Error al actualizar favoritos. Por favor intenta de nuevo."

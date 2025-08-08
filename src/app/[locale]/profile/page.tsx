@@ -140,7 +140,7 @@ export default function ProfilePage() {
 
   const validatePassword = () => {
     if (editForm.newPassword && !editForm.currentPassword) {
-      toast.error('Current password is required to change password', {
+      toast.error(t('currentPasswordRequired'), {
         icon: '⚠️',
         duration: 4000,
       });
@@ -148,7 +148,7 @@ export default function ProfilePage() {
     }
     
     if (editForm.newPassword && editForm.newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters long', {
+      toast.error(t('newPasswordMinLength'), {
         icon: '⚠️',
         duration: 4000,
       });
@@ -156,7 +156,7 @@ export default function ProfilePage() {
     }
     
     if (editForm.newPassword && editForm.newPassword !== editForm.confirmPassword) {
-      toast.error('New passwords do not match', {
+      toast.error(t('passwordsDoNotMatch'), {
         icon: '⚠️',
         duration: 4000,
       });
@@ -200,7 +200,7 @@ export default function ProfilePage() {
       });
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile', {
+      toast.error(t('failedToUpdateProfile'), {
         icon: '❌',
         duration: 4000,
       });

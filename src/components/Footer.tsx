@@ -9,7 +9,7 @@ const Footer = () => {
   const t = useTranslations('footer');
   
   return (
-    <footer className={cn("relative w-full px-20 bg-white border-t border-gray-200 pt-8 pb-0 flex flex-col items-center text-center z-10")}>  
+    <footer className={cn("relative w-full md:px-20 px-4 bg-white border-t border-gray-200 pt-8 pb-0 flex flex-col items-center text-center z-10")}>  
       {/* Legal/Disclaimer Section */}
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base mb-6">
         <p>
