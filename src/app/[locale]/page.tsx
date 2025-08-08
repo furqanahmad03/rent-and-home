@@ -14,6 +14,7 @@ import Image from "next/image";
 import { BedDouble, Bath, Ruler, MapPin, Calendar, Eye } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import { useTranslations } from 'next-intl';
 
 // Define the type for a house listing
 interface House {
@@ -45,8 +46,6 @@ interface House {
   updatedAt: string;
   version?: number;
 }
-
-
 
 // Carousel skeleton card for homepage
 function CarouselHouseSkeleton() {
@@ -101,6 +100,7 @@ function CarouselHouseSkeleton() {
 }
 
 export default function Home() {
+  const t = useTranslations('homepage');
   const [carouselHouses, setCarouselHouses] = useState<House[]>([]);
   const { data: session } = useSession();
 
@@ -131,7 +131,7 @@ export default function Home() {
       <HeroSection />
       {session && (  
         <div className="my-12 mx-auto max-w-7xl px-20">
-          <h3 className="text-2xl font-bold mb-6 ml-4">Homes for you</h3>
+          <h3 className="text-2xl font-bold mb-6 ml-4">{t('homesForYou')}</h3>
           <Carousel className="w-full" opts={{ loop: true, align: "start", slidesToScroll: 1 }}>
             <CarouselContent className="-ml-4 py-3 bg-transparent">
               {!session || carouselHouses.length === 0
@@ -165,7 +165,9 @@ export default function Home() {
                           {/* Status Badge */}
                           <div className="absolute top-1.5 left-1.5">
                             <span className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                              {house.homeStatus}
+                              {house.homeStatus === 'FOR_RENT' ? t('propertyCard.forRent') :
+                               house.homeStatus === 'FOR_SALE' ? t('propertyCard.forSale') :
+                               t('propertyCard.recentlySold')}
                             </span>
                           </div>
                           {/* Property Type Badge */}
@@ -180,7 +182,7 @@ export default function Home() {
                           {/* Price */}
                           <div className="flex items-center gap-1 mb-1.5">
                             <div className="text-base font-bold text-blue-700">{house.currency} {house.price.toLocaleString()}</div>
-                            <span className="text-xs text-gray-500">/ {house.homeStatus === 'For Rent' ? 'month' : 'total'}</span>
+                            <span className="text-xs text-gray-500">/ {house.homeStatus === 'FOR_RENT' ? t('propertyCard.month') : t('propertyCard.total')}</span>
                           </div>
                           {/* Address (2 lines) */}
                           <div className="mb-1.5">
@@ -196,17 +198,17 @@ export default function Home() {
                             <div className="flex flex-col items-center p-1.5 bg-blue-50 rounded-sm group-hover:bg-blue-100 transition-colors">
                               <BedDouble className="w-3 h-3 text-blue-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.bedrooms}</span>
-                              <span className="text-xs text-gray-500">beds</span>
+                              <span className="text-xs text-gray-500">{t('propertyCard.beds')}</span>
                             </div>
                             <div className="flex flex-col items-center p-1.5 bg-green-50 rounded-sm group-hover:bg-green-100 transition-colors">
                               <Bath className="w-3 h-3 text-green-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.bathrooms}</span>
-                              <span className="text-xs text-gray-500">baths</span>
+                              <span className="text-xs text-gray-500">{t('propertyCard.baths')}</span>
                             </div>
                             <div className="flex flex-col items-center p-1.5 bg-purple-50 rounded-sm group-hover:bg-purple-100 transition-colors">
                               <Ruler className="w-3 h-3 text-purple-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.livingArea.toLocaleString()}</span>
-                              <span className="text-xs text-gray-500">sqft</span>
+                              <span className="text-xs text-gray-500">{t('propertyCard.sqft')}</span>
                             </div>
                           </div>
                           {/* Location and Date */}
@@ -217,7 +219,7 @@ export default function Home() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Calendar className="w-2.5 h-2.5 text-gray-400" />
-                              <span>Listed {new Date(house.datePostedString).toLocaleDateString()}</span>
+                              <span>{t('propertyCard.listed')} {new Date(house.datePostedString).toLocaleDateString()}</span>
                             </div>
                           </div>
                           {/* Features Preview */}
@@ -243,10 +245,10 @@ export default function Home() {
                           >
                             <Eye className="w-2.5 h-2.5 mr-1" />
                             {house.homeStatus === 'RECENTLY_SOLD'
-                              ? 'Sold'
+                              ? t('propertyCard.sold')
                               : house.homeStatus === 'FOR_RENT'
-                                ? 'Rent this house'
-                                : 'Buy this house'}
+                                ? t('propertyCard.rentThisHouse')
+                                : t('propertyCard.buyThisHouse')}
                           </button>
                         </CardContent>
                       </Card>
@@ -264,7 +266,7 @@ export default function Home() {
         <div className="bg-white rounded-2xl shadow-md flex flex-col gap-4 items-center p-8 pb-12 text-center border border-gray-100 hover:scale-105 transition-all duration-300">
           <Image 
             src="/buy-home.webp" 
-            alt="Buy a home" 
+            alt={t('buyHome.title')} 
             width={400}
             height={300}
             className="w-full h-auto object-contain mb-4"
@@ -277,8 +279,8 @@ export default function Home() {
               console.log('Successfully loaded buy-home.webp');
             }}
           />
-          <h3 className="text-3xl font-bold mb-2">Buy a home</h3>
-          <p className="text-gray-500 mb-6">Find your place with an immersive photo experience and the most listings, including things you won&apos;t find anywhere else.</p>
+          <h3 className="text-3xl font-bold mb-2">{t('buyHome.title')}</h3>
+          <p className="text-gray-500 mb-6">{t('buyHome.description')}</p>
           <button
             onClick={() => {
               if (!session) {
@@ -289,14 +291,14 @@ export default function Home() {
             }}
             className="inline-block border border-blue-500 text-blue-600 font-semibold rounded-lg px-6 py-2 hover:bg-blue-50 transition cursor-pointer"
           >
-            Browse homes
+            {t('browseHomes')}
           </button>
         </div>
         {/* Sell a home */}
         <div className="bg-white rounded-2xl shadow-md flex flex-col gap-4 items-center p-8 pb-12 text-center border border-gray-100 hover:scale-105 transition-all duration-300">
           <Image 
             src="/sell-home.webp" 
-            alt="Sell a home" 
+            alt={t('sellHome.title')} 
             width={400}
             height={300}
             className="w-full h-auto object-contain mb-4"
@@ -309,8 +311,8 @@ export default function Home() {
               console.log('Successfully loaded sell-home.webp');
             }}
           />
-          <h3 className="text-3xl font-bold mb-2">Sell a home</h3>
-          <p className="text-gray-500 mb-6">No matter what path you take to sell your home, we can help you navigate a successful sale.</p>
+          <h3 className="text-3xl font-bold mb-2">{t('sellHome.title')}</h3>
+          <p className="text-gray-500 mb-6">{t('sellHome.description')}</p>
           <button
             onClick={() => {
               if (!session) {
@@ -321,14 +323,14 @@ export default function Home() {
             }}
             className="inline-block border border-blue-500 text-blue-600 font-semibold rounded-lg px-6 py-2 hover:bg-blue-50 transition cursor-pointer"
           >
-            See your options
+            {t('seeOptions')}
           </button>
         </div>
         {/* Rent a home */}
         <div className="bg-white rounded-2xl shadow-md flex flex-col gap-4 items-center p-8 pb-12 text-center border border-gray-100 hover:scale-105 transition-all duration-300">
           <Image 
             src="/rent-home.webp" 
-            alt="Rent a home" 
+            alt={t('rentHome.title')} 
             width={400}
             height={300}
             className="w-full h-auto object-contain mb-4"
@@ -341,8 +343,8 @@ export default function Home() {
               console.log('Successfully loaded rent-home.webp');
             }}
           />
-          <h3 className="text-3xl font-bold mb-2">Rent a home</h3>
-          <p className="text-gray-500 mb-6">We&apos;re creating a seamless online experience – from shopping on the largest rental network to applying, to paying rent.</p>
+          <h3 className="text-3xl font-bold mb-2">{t('rentHome.title')}</h3>
+          <p className="text-gray-500 mb-6">{t('rentHome.description')}</p>
           <button
             onClick={() => {
               if (!session) {
@@ -353,7 +355,7 @@ export default function Home() {
             }}
             className="inline-block border border-blue-500 text-blue-600 font-semibold rounded-lg px-6 py-2 hover:bg-blue-50 transition cursor-pointer"
           >
-            Find rentals
+            {t('findRentals')}
           </button>
         </div>
       </div>

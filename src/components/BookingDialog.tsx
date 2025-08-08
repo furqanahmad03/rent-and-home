@@ -16,6 +16,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function BookingDialog({ trigger }: { trigger?: React.ReactNode }) {
   const { data: session } = useSession();
@@ -24,6 +25,7 @@ export default function BookingDialog({ trigger }: { trigger?: React.ReactNode }
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations('booking');
 
   // Update name when session becomes available
   useEffect(() => {
@@ -35,12 +37,12 @@ export default function BookingDialog({ trigger }: { trigger?: React.ReactNode }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !name || !phone) {
-      toast.error("Please fill in all fields");
+      toast.error(t('fillRequiredFields'));
       return;
     }
     setIsSubmitting(true);
     setTimeout(() => {
-      toast.success(`Tour booked for ${date.toLocaleString()} by ${name}`);
+      toast.success(t('viewingScheduled'));
       setOpen(false);
       setDate(undefined);
       setName("");
@@ -53,58 +55,60 @@ export default function BookingDialog({ trigger }: { trigger?: React.ReactNode }
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" className="w-full">Book a Tour</Button>
+          <Button variant="outline" className="w-full">{t('scheduleViewing')}</Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-sm w-full !z-1000">
         <DialogHeader>
-          <DialogTitle>Book a Property Tour</DialogTitle>
-          <DialogDescription>Select your preferred date and time, and provide your contact info.</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('selectDateTime')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <Label className="mb-1 block">Date & Time</Label>
+            <Label className="mb-1 block">{t('selectDate')}</Label>
             <DateTimePicker hourCycle={12} value={date} onChange={setDate} className="w-full" />
           </div>
           <div>
-            <Label className="mb-1 block">Email</Label>
+            <Label className="mb-1 block">{t('yourEmail')}</Label>
             <Input value={session?.user?.email || ""} disabled className="blur-[0.5px] bg-gray-50 text-gray-900 select-none" />
           </div>
           <div>
-            <Label className="mb-1 block">Full Name</Label>
-            <Input value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" required />
+            <Label className="mb-1 block">{t('yourName')}</Label>
+            <Input value={name} onChange={e => setName(e.target.value)} placeholder={t('yourName')} required />
           </div>
           <div>
-            <Label className="mb-1 block">Phone Number</Label>
+            <Label className="mb-1 block">{t('yourPhone')}</Label>
             <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 123-4567" required />
           </div>
           
           {/* Booking Summary */}
           {(date || name || phone) && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-              <h4 className="text-sm font-semibold text-blue-900">Booking Summary</h4>
+              <h4 className="text-sm font-semibold text-blue-900">{t('bookingSummary')}</h4>
               <div className="text-sm text-blue-800 space-y-1">
                 {date && (
-                  <p><span className="font-medium">Date & Time:</span> {date.toLocaleString()}</p>
+                  <p><span className="font-medium">{t('dateTime')}:</span> {date.toLocaleString()}</p>
                 )}
                 {name && (
-                  <p><span className="font-medium">Name:</span> {name}</p>
+                  <p><span className="font-medium">{t('name')}:</span> {name}</p>
                 )}
                 {phone && (
-                  <p><span className="font-medium">Phone:</span> {phone}</p>
+                  <p><span className="font-medium">{t('phone')}:</span> {phone}</p>
                 )}
                 {session?.user?.email && (
-                  <p><span className="font-medium">Email:</span> {session.user.email}</p>
+                  <p><span className="font-medium">{t('email')}:</span> {session.user.email}</p>
                 )}
               </div>
             </div>
           )}
           
-          <DialogFooter className="flex flex-row gap-2">
-            <Button type="submit" onClick={handleSubmit} className="w-1/2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white" disabled={isSubmitting}>{isSubmitting ? "Booking..." : "Book Tour"}</Button>
+          <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline" className="w-1/2">Cancel</Button>
+              <Button type="button" variant="outline">{t('cancel')}</Button>
             </DialogClose>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? t('scheduling') : t('scheduleViewing')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

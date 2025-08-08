@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 
 interface House {
   id: string;
@@ -42,6 +43,8 @@ export default function StaticMap({ houses, center, zoom }: StaticMapProps) {
   const mapCenter = center || [39.8283, -98.5795];
   const mapZoom = zoom || 4;
   const router = useRouter();
+  const t = useTranslations('houses.detail');
+  
   return (
     <MapContainer
       center={mapCenter}
@@ -74,7 +77,7 @@ export default function StaticMap({ houses, center, zoom }: StaticMapProps) {
                 className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                 onClick={() => router.push(`/houses/${house.id}`)}
               >
-                View details
+                {t('viewDetails')}
               </button>
             </div>
           </Popup>

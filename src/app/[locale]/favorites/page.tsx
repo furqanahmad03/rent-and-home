@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, BedDouble, Bath, Ruler, MapPin, Calendar, Eye, Loader2 } from "lucide-react";
@@ -102,25 +103,32 @@ function HouseSkeleton() {
 }
 
 export default function FavoritesPage() {
+  const t = useTranslations('favorites');
+  const homepageT = useTranslations('homepage');
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [favorites, setFavorites] = useState<House[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
-  const router = useRouter();
 
-  // Fetch user's favorite houses
+  // Redirect if not authenticated
   useEffect(() => {
-    if (status === "authenticated") {
-      fetchFavorites();
-    } else if (status === "unauthenticated") {
+    if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
 
+  // Fetch user's favorites
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchFavorites();
+    }
+  }, [status]);
+
   const fetchFavorites = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/favorites');
+      const response = await fetch("/api/favorites");
       const result = await response.json();
       
       if (response.ok) {
@@ -136,17 +144,28 @@ export default function FavoritesPage() {
   };
 
   const toggleFavorite = async (houseId: string) => {
-    setLoadingFavorites(true);
     try {
-      await fetch(`/api/favorites?houseId=${houseId}`, {
-        method: 'DELETE',
+      setLoadingFavorites(true);
+      const response = await fetch("/api/favorites", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ houseId }),
       });
-      // Remove from local state
-      setFavorites(prev => prev.filter(house => house.id !== houseId));
-      toast.success('Property removed from favorites!', {
-        icon: '💔',
-        duration: 3000,
-      });
+
+      if (response.ok) {
+        toast.success(t('removeFromFavorites'), {
+          icon: '❤️',
+          duration: 3000,
+        });
+        // Remove from local state
+        setFavorites(prev => prev.filter(house => house.id !== houseId));
+      } else {
+        const error = await response.json();
+        toast.error(`Error removing from favorites: ${error.error}`, {
+          icon: '❌',
+          duration: 4000,
+        });
+      }
     } catch (error) {
       console.error('Error removing from favorites:', error);
       toast.error('Failed to remove property from favorites. Please try again.', {
@@ -174,11 +193,11 @@ export default function FavoritesPage() {
     <div className="max-w-7xl mx-auto py-10 px-4">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Your Favorites</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('myFavorites')}</h1>
         <p className="text-gray-600">
           {favorites.length === 0 
-            ? "You haven't added any properties to your favorites yet."
-            : `You have ${favorites.length} favorite propert${favorites.length === 1 ? 'y' : 'ies'}.`
+            ? t('noFavorites')
+            : t('favoritesCount', { count: favorites.length })
           }
         </p>
       </div>
@@ -209,7 +228,7 @@ export default function FavoritesPage() {
                   {/* Status Badge */}
                   <div className="absolute top-1.5 left-1.5">
                     <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm ${house.homeStatus === 'RECENTLY_SOLD' ? 'bg-gray-500' : house.homeStatus === 'FOR_RENT' ? 'bg-yellow-500' : 'bg-green-500'}`}>
-                      {house.homeStatus === 'RECENTLY_SOLD' ? 'Sold' : house.homeStatus}
+                      {house.homeStatus === 'RECENTLY_SOLD' ? homepageT('propertyCard.sold') : house.homeStatus}
                     </span>
                   </div>
                   {/* Property Type Badge */}
@@ -238,7 +257,7 @@ export default function FavoritesPage() {
                   {/* Price */}
                   <div className="flex items-center gap-1 mb-1.5">
                     <div className="text-base font-bold text-blue-700">{house.currency} {house.price.toLocaleString()}</div>
-                    <span className="text-xs text-gray-500">/ {house.homeStatus === 'FOR_RENT' ? 'month' : 'total'}</span>
+                    <span className="text-xs text-gray-500">/ {house.homeStatus === 'FOR_RENT' ? homepageT('propertyCard.month') : homepageT('propertyCard.total')}</span>
                   </div>
                   {/* Address (2 lines) */}
                   <div className="mb-1.5">
@@ -254,17 +273,17 @@ export default function FavoritesPage() {
                     <div className="flex flex-col items-center p-1.5 bg-blue-50 rounded-sm group-hover:bg-blue-100 transition-colors">
                       <BedDouble className="w-3 h-3 text-blue-600 mb-0.5" />
                       <span className="text-xs font-medium text-gray-700">{house.bedrooms}</span>
-                      <span className="text-xs text-gray-500">beds</span>
+                      <span className="text-xs text-gray-500">{homepageT('propertyCard.beds')}</span>
                     </div>
                     <div className="flex flex-col items-center p-1.5 bg-green-50 rounded-sm group-hover:bg-green-100 transition-colors">
                       <Bath className="w-3 h-3 text-green-600 mb-0.5" />
                       <span className="text-xs font-medium text-gray-700">{house.bathrooms}</span>
-                      <span className="text-xs text-gray-500">baths</span>
+                      <span className="text-xs text-gray-500">{homepageT('propertyCard.baths')}</span>
                     </div>
                     <div className="flex flex-col items-center p-1.5 bg-purple-50 rounded-sm group-hover:bg-purple-100 transition-colors">
                       <Ruler className="w-3 h-3 text-purple-600 mb-0.5" />
                       <span className="text-xs font-medium text-gray-700">{house.livingArea.toLocaleString()}</span>
-                      <span className="text-xs text-gray-500">sqft</span>
+                      <span className="text-xs text-gray-500">{homepageT('propertyCard.sqft')}</span>
                     </div>
                   </div>
                   {/* Location and Date */}
@@ -275,7 +294,7 @@ export default function FavoritesPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-2.5 h-2.5 text-gray-400" />
-                      <span>Listed {new Date(house.datePostedString).toLocaleDateString()}</span>
+                      <span>{homepageT('propertyCard.listed')} {new Date(house.datePostedString).toLocaleDateString()}</span>
                     </div>
                   </div>
                   {/* Action Button */}
@@ -286,10 +305,10 @@ export default function FavoritesPage() {
                   >
                     <Eye className="w-2.5 h-2.5 mr-1" />
                     {house.homeStatus === 'RECENTLY_SOLD'
-                      ? 'Sold'
+                      ? homepageT('propertyCard.sold')
                       : house.homeStatus === 'FOR_RENT'
-                        ? 'Rent this house'
-                        : 'Buy this house'}
+                        ? homepageT('propertyCard.rentThisHouse')
+                        : homepageT('propertyCard.buyThisHouse')}
                   </Button>
                 </CardContent>
               </Card>
@@ -299,15 +318,15 @@ export default function FavoritesPage() {
           // Empty state
           <div className="col-span-full text-center py-12">
             <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No favorites yet</h3>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">{t('noFavorites')}</h3>
             <p className="text-gray-500 mb-6">
-              Start exploring properties and add them to your favorites to see them here.
+              {t('startBrowsing')}
             </p>
             <Button 
               onClick={() => router.push('/houses')}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              Browse Properties
+              {homepageT('browseHomes')}
             </Button>
           </div>
         )}

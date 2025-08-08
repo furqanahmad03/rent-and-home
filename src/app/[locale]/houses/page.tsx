@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useTranslations } from 'next-intl';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -60,12 +61,10 @@ interface House {
   ownerId: string;
 }
 
-
-
 // Skeleton component for house cards
 function HouseSkeleton() {
   return (
-    <Card className="min-w-[300px] !pt-0 pb-0 gap-0 rounded-lg shadow-sm border-0 overflow-hidden bg-white h-full flex flex-col">
+    <Card className="!pt-0 pb-0 gap-0 rounded-lg shadow-sm border-0 md:overflow-hidden overflow-visible bg-white h-full flex flex-col">
       {/* Image skeleton */}
       <div className="relative">
         <div className="w-full h-32 bg-gray-200 animate-pulse"></div>
@@ -74,8 +73,12 @@ function HouseSkeleton() {
           <div className="w-12 h-4 bg-gray-300 rounded-full animate-pulse"></div>
         </div>
         {/* Property type badge skeleton */}
-        <div className="absolute top-1.5 right-1.5">
+        <div className="absolute md:top-1.5 md:right-1.5 top-7 left-1.5">
           <div className="w-16 h-4 bg-gray-300 rounded-full animate-pulse"></div>
+        </div>
+        {/* Heart button skeleton */}
+        <div className="absolute bottom-1.5 left-1.5">
+          <div className="w-7 h-7 bg-gray-300 rounded-full animate-pulse"></div>
         </div>
       </div>
       {/* Content skeleton */}
@@ -86,28 +89,30 @@ function HouseSkeleton() {
           <div className="w-12 h-3 bg-gray-200 rounded animate-pulse"></div>
         </div>
         {/* Address skeleton */}
-        <div className="w-full h-4 bg-gray-200 rounded mb-1.5 animate-pulse"></div>
-        <div className="w-3/4 h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+        <div className="mb-1.5">
+          <div className="w-full h-4 bg-gray-200 rounded mb-1 animate-pulse"></div>
+          <div className="w-3/4 h-3 bg-gray-200 rounded animate-pulse"></div>
+        </div>
         {/* Features grid skeleton */}
-        <div className="grid grid-cols-3 gap-1 mb-2">
-          <div className="flex flex-col items-center p-1.5 bg-gray-50 rounded-sm">
-            <div className="w-3 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
-            <div className="w-4 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
+        <div className="grid md:grid-cols-3 grid-cols-1 gap-1 mb-2">
+          <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-blue-50 rounded-sm">
+            <div className="w-3 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
+            <div className="w-4 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
             <div className="w-6 h-3 bg-gray-300 rounded animate-pulse"></div>
           </div>
-          <div className="flex flex-col items-center p-1.5 bg-gray-50 rounded-sm">
-            <div className="w-3 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
-            <div className="w-4 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
+          <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-green-50 rounded-sm">
+            <div className="w-3 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
+            <div className="w-4 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
             <div className="w-6 h-3 bg-gray-300 rounded animate-pulse"></div>
           </div>
-          <div className="flex flex-col items-center p-1.5 bg-gray-50 rounded-sm">
-            <div className="w-3 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
-            <div className="w-8 h-3 bg-gray-300 rounded mb-0.5 animate-pulse"></div>
+          <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-purple-50 rounded-sm">
+            <div className="w-3 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
+            <div className="w-8 h-3 bg-gray-300 rounded md:mb-0.5 mb-0 animate-pulse"></div>
             <div className="w-6 h-3 bg-gray-300 rounded animate-pulse"></div>
           </div>
         </div>
         {/* Location and date skeleton */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex md:flex-row flex-col md:space-x-0 space-x-1 md:items-center items-start justify-between mb-2">
           <div className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 bg-gray-300 rounded animate-pulse"></div>
             <div className="w-16 h-3 bg-gray-200 rounded animate-pulse"></div>
@@ -118,192 +123,148 @@ function HouseSkeleton() {
           </div>
         </div>
         {/* Button skeleton */}
-        <div className="w-full h-8 bg-gray-200 rounded-md animate-pulse"></div>
+        <div className="w-full md:h-8 h-6 bg-gray-200 rounded-md animate-pulse"></div>
       </CardContent>
     </Card>
   );
 }
 
 function ListingPageContent() {
-  const { data: session, status } = useSession();
-  const [houses, setHouses] = useState<House[]>([]);
-  const [search, setSearch] = useState("");
-  const [filtered, setFiltered] = useState<House[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [loadingFavorites, setLoadingFavorites] = useState(false);
-  const searchParams = useSearchParams();
+  const t = useTranslations('houses');
+  const homepageT = useTranslations('homepage');
+  const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const purpose = searchParams.get('purpose');
 
-  // Filter dialog state
-  const [price, setPrice] = useState<number[]>([0, 2000000]);
-  const [area, setArea] = useState<number[]>([0, 10000]);
-  const [bedrooms, setBedrooms] = useState<string>("any");
-  const [bathrooms, setBathrooms] = useState<string>("any");
-  const [homeTypes, setHomeTypes] = useState<string[]>([]);
-  const [propertyStatus, setPropertyStatus] = useState<string>("any");
+  const [houses, setHouses] = useState<House[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filtered, setFiltered] = useState<House[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [price, setPrice] = useState([0, 2000000]);
+  const [area, setArea] = useState([0, 10000]);
+  const [bedrooms, setBedrooms] = useState<number[]>([]);
+  const [bathrooms, setBathrooms] = useState<number[]>([]);
+  const [propertyType, setPropertyType] = useState<string[]>([]);
+  const [status, setStatus] = useState<string[]>([]);
 
-  // Redirect to home page if not authenticated
+  // Fetch houses on component mount
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-    }
-  }, [status, router]);
+    fetchHouses();
+  }, [purpose]);
 
-  // Fetch user favorites
+  // Fetch user's favorites if authenticated
   useEffect(() => {
     if (session?.user?.id) {
-      fetch('/api/favorites')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.data) {
-            setFavorites(data.data.map((house: House) => house.id));
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching favorites:', error);
-        });
+      fetchFavorites();
     }
   }, [session]);
 
+  // Filter houses when search or filters change
   useEffect(() => {
+    filterHouses(houses);
+  }, [search, price, area, bedrooms, bathrooms, propertyType, status, houses]);
+
+  const fetchHouses = async () => {
+    try {
     setLoading(true);
-    // Build query string from filters
-    const params = new URLSearchParams();
-    if (purpose) params.set('purpose', purpose);
-    if (search) params.set('search', search);
-    if (price[0] !== 0 || price[1] !== 2000000) {
-      params.set('minPrice', price[0].toString());
-      params.set('maxPrice', price[1].toString());
-    }
-    if (area[0] !== 0 || area[1] !== 10000) {
-      params.set('minArea', area[0].toString());
-      params.set('maxArea', area[1].toString());
-    }
-    if (bedrooms !== 'any') params.set('bedrooms', bedrooms);
-    if (bathrooms !== 'any') params.set('bathrooms', bathrooms);
-    if (homeTypes.length > 0) params.set('homeTypes', homeTypes.join(','));
-    if (propertyStatus !== 'any') params.set('propertyStatus', propertyStatus);
-    const url = `/api/houses?${params.toString()}`;
-    fetch(url)
-      .then((res) => res.json())
-      .then((apiData) => {
-        setHouses(apiData.data);
-        setFiltered(apiData.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching houses:', error);
-        setLoading(false);
-      });
-  }, [purpose, search, price, area, bedrooms, bathrooms, homeTypes, propertyStatus]);
-
-  useEffect(() => {
-    const q = search.toLowerCase();
-    const filteredList = houses.filter((h) => {
-      // Purpose filter
-      if (purpose === 'rent' && h.homeStatus !== 'FOR_RENT') return false;
-      if (purpose === 'buy' && h.homeStatus !== 'FOR_SALE') return false;
-      // Search filter
-      return (
-        h.state?.toLowerCase().includes(q) ||
-        h.city?.toLowerCase().includes(q) ||
-        h.homeType?.toLowerCase().includes(q) ||
-        h.price?.toString().includes(q) ||
-        h.bedrooms?.toString().includes(q) ||
-        h.bathrooms?.toString().includes(q) ||
-        h.livingArea?.toString().includes(q) ||
-        h.streetAddress?.toLowerCase().includes(q) ||
-        h.zipcode?.toLowerCase().includes(q)
-      );
-    });
-    setFiltered(filteredList);
-  }, [search, houses, purpose]);
-
-  useEffect(() => {
-    // Set search input value from URL on mount
-    const searchParam = searchParams.get('search');
-    if (searchParam && searchParam !== search) {
-      setSearch(searchParam);
-    }
-  }, [searchParams, search]);
-
-  // Don't render anything if not authenticated
-  if (status === 'unauthenticated') {
-    return null;
-  }
-
-  // Helper: filter houses based on filter state
-  function filterHouses(houses: House[]) {
-    return houses.filter((h) => {
-      // Price
-      if (!Array.isArray(price) || price.length !== 2) return true;
-      if (h.price < price[0] || h.price > price[1]) return false;
-      // Area
-      if (!Array.isArray(area) || area.length !== 2) return true;
-      if (h.livingArea < area[0] || h.livingArea > area[1]) return false;
-      // Bedrooms
-      if (bedrooms !== "any" && h.bedrooms < parseInt(bedrooms)) return false;
-      // Bathrooms
-      if (bathrooms !== "any" && h.bathrooms < parseInt(bathrooms)) return false;
-      // Home Type
-      if (homeTypes.length > 0 && !homeTypes.includes(h.homeType)) return false;
-      // Property Status
-      if (propertyStatus !== "any") {
-        if (propertyStatus === "for-sale" && h.homeStatus !== "FOR_SALE") return false;
-        if (propertyStatus === "for-rent" && h.homeStatus !== "FOR_RENT") return false;
-        if (propertyStatus === "sold" && h.homeStatus !== "RECENTLY_SOLD") return false;
+      let url = '/api/houses';
+      if (purpose === 'buy') {
+        url += '?status=FOR_SALE';
+      } else if (purpose === 'rent') {
+        url += '?status=FOR_RENT';
       }
-      return true;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setHouses(data.data || []);
+      } else {
+        console.error('Failed to fetch houses:', data.error);
+      }
+    } catch (error) {
+        console.error('Error fetching houses:', error);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await fetch('/api/favorites');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFavorites(data.data?.map((fav: any) => fav.houseId) || []);
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
+  function filterHouses(houses: House[]) {
+    let filtered = houses.filter(house => {
+      // Search filter
+      const searchLower = search.toLowerCase();
+      const matchesSearch = !search || 
+        house.streetAddress.toLowerCase().includes(searchLower) ||
+        house.city.toLowerCase().includes(searchLower) ||
+        house.state.toLowerCase().includes(searchLower) ||
+        house.homeType.toLowerCase().includes(searchLower) ||
+        house.bedrooms.toString().includes(searchLower);
+
+      // Price filter
+      const matchesPrice = house.price >= price[0] && house.price <= price[1];
+
+      // Area filter
+      const matchesArea = house.livingArea >= area[0] && house.livingArea <= area[1];
+
+      // Bedrooms filter
+      const matchesBedrooms = bedrooms.length === 0 || bedrooms.includes(house.bedrooms);
+
+      // Bathrooms filter
+      const matchesBathrooms = bathrooms.length === 0 || bathrooms.includes(house.bathrooms);
+
+      // Property type filter
+      const matchesPropertyType = propertyType.length === 0 || propertyType.includes(house.homeType);
+
+      // Status filter
+      const matchesStatus = status.length === 0 || status.includes(house.homeStatus);
+
+      return matchesSearch && matchesPrice && matchesArea && matchesBedrooms && matchesBathrooms && matchesPropertyType && matchesStatus;
     });
+
+    setFiltered(filtered);
   }
 
-  // Handle Apply Filters
   function handleApplyFilters() {
-    setFiltered(filterHouses(houses));
     setFilterDialogOpen(false);
-    toast.success('Filters applied successfully!', {
-      icon: '✅',
-      duration: 2000,
-    });
   }
 
-  // Handle Clear Filters
   function handleClearFilters() {
     setPrice([0, 2000000]);
     setArea([0, 10000]);
-    setBedrooms("any");
-    setBathrooms("any");
-    setHomeTypes([]);
-    setPropertyStatus("any");
-    setSearch("");
-    setFiltered(houses);
-    // Preserve 'purpose' in the URL if it exists
-    const params = new URLSearchParams(window.location.search);
-    const purpose = params.get('purpose');
-    if (purpose) {
-      router.push(`/houses?purpose=${encodeURIComponent(purpose)}`);
-    } else {
-      router.push('/houses');
-    }
-    toast.success('Filters cleared!', {
-      icon: '🧹',
-      duration: 2000,
-    });
+    setBedrooms([]);
+    setBathrooms([]);
+    setPropertyType([]);
+    setStatus([]);
+    setFilterDialogOpen(false);
   }
 
   const getPageTitle = () => {
-    if (purpose === 'rent') return 'Rent properties';
-    if (purpose === 'buy') return 'Buy properties';
-    return 'All properties';
+    if (purpose === 'buy') return 'Homes for Sale';
+    if (purpose === 'rent') return 'Homes for Rent';
+    return t('allProperties');
   };
 
   const toggleFavorite = async (houseId: string) => {
     if (!session?.user?.id) {
       // Redirect to sign in or show sign in modal
-      toast.error('Please sign in to save favorites', {
+      toast.error(t('signInToSaveFavorites'), {
         icon: '🔒',
         duration: 4000,
       });
@@ -320,7 +281,7 @@ function ListingPageContent() {
           method: 'DELETE',
         });
         setFavorites(prev => prev.filter(id => id !== houseId));
-        toast.success('Removed from favorites!', {
+        toast.success(t('removedFromFavorites'), {
           icon: '💔',
           duration: 3000,
         });
@@ -334,14 +295,14 @@ function ListingPageContent() {
           body: JSON.stringify({ houseId }),
         });
         setFavorites(prev => [...prev, houseId]);
-        toast.success('Added to favorites!', {
+        toast.success(t('addedToFavorites'), {
           icon: '❤️',
           duration: 3000,
         });
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      toast.error('Failed to update favorites. Please try again.', {
+      toast.error(t('failedToUpdateFavorites'), {
         icon: '❌',
         duration: 4000,
       });
@@ -357,8 +318,8 @@ function ListingPageContent() {
           {/* Search Input */}
           <div className="relative flex-1 min-w-[300px] max-w-2xl">
             <Input
-              className="w-full h-12 px-6 text-base rounded-sm border-blue-500 shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-              placeholder="Search by city, state, property type, bedrooms..."
+              className="w-full h-12 px-6 md:text-base text-sm rounded-sm border-blue-500 shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ boxShadow: "0 2px 8px 0 rgba(60,60,60,0.06)" }}
@@ -376,21 +337,21 @@ function ListingPageContent() {
           <AlertDialog open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button className="h-12 px-6 text-base text-blue-600 hover:text-blue-800 font-semibold border-blue-500" variant="outline">
-                Filters
+                {t('filters')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="max-w-lg">
               <AlertDialogHeader>
-                <AlertDialogTitle>Filter Properties</AlertDialogTitle>
+                <AlertDialogTitle>{t('filterProperties')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Select filters to narrow down your property search. (All filter options will be here)
+                  {t('filterDescription')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               {/* Filter options UI */}
               <div className="space-y-6 py-2">
                 {/* Price Range Slider */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Price Range ($)</label>
+                  <label className="block text-sm font-medium mb-1">{t('priceRange')} ($)</label>
                   <Slider min={0} max={2000000} value={price as number[]} onValueChange={setPrice} className="w-full max-w-xs" />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>{price[0].toLocaleString()}</span>
@@ -399,104 +360,106 @@ function ListingPageContent() {
                 </div>
                 {/* Area Range Slider */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Living Area (sqft)</label>
+                  <label className="block text-sm font-medium mb-1">{t('areaRange')} (sqft)</label>
                   <Slider min={0} max={10000} value={area as number[]} onValueChange={setArea} className="w-full max-w-xs" />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>{area[0]}</span>
-                    <span>{area[1]}+</span>
+                    <span>{area[0].toLocaleString()}</span>
+                    <span>{area[1].toLocaleString()}+</span>
                   </div>
                 </div>
-                {/* Bedrooms RadioGroup */}
+                {/* Bedrooms */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Bedrooms</label>
-                  <RadioGroup value={bedrooms} onValueChange={setBedrooms} className="flex gap-4">
-                    <RadioGroupItem value="any" id="bedrooms-any" />
-                    <label htmlFor="bedrooms-any" className="text-sm">Any</label>
-                    <RadioGroupItem value="1" id="bedrooms-1" />
-                    <label htmlFor="bedrooms-1" className="text-sm">1+</label>
-                    <RadioGroupItem value="2" id="bedrooms-2" />
-                    <label htmlFor="bedrooms-2" className="text-sm">2+</label>
-                    <RadioGroupItem value="3" id="bedrooms-3" />
-                    <label htmlFor="bedrooms-3" className="text-sm">3+</label>
-                    <RadioGroupItem value="4" id="bedrooms-4" />
-                    <label htmlFor="bedrooms-4" className="text-sm">4+</label>
-                  </RadioGroup>
-                </div>
-                {/* Bathrooms RadioGroup */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">Bathrooms</label>
-                  <RadioGroup value={bathrooms} onValueChange={setBathrooms} className="flex gap-4">
-                    <RadioGroupItem value="any" id="bathrooms-any" />
-                    <label htmlFor="bathrooms-any" className="text-sm">Any</label>
-                    <RadioGroupItem value="1" id="bathrooms-1" />
-                    <label htmlFor="bathrooms-1" className="text-sm">1+</label>
-                    <RadioGroupItem value="2" id="bathrooms-2" />
-                    <label htmlFor="bathrooms-2" className="text-sm">2+</label>
-                    <RadioGroupItem value="3" id="bathrooms-3" />
-                    <label htmlFor="bathrooms-3" className="text-sm">3+</label>
-                    <RadioGroupItem value="4" id="bathrooms-4" />
-                    <label htmlFor="bathrooms-4" className="text-sm">4+</label>
-                  </RadioGroup>
-                </div>
-                {/* Home Type Checkboxes */}
-                <div>
-                  <label className="block text-sm font-medium mb-1">Home Type</label>
-                  <div className="flex gap-4 flex-wrap">
-                    {['House', 'Apartment', 'Condo', 'Townhome', 'Land'].map(type => (
-                      <label key={type} className="flex items-center gap-2 text-sm">
+                  <label className="block text-sm font-medium mb-2">{t('bedrooms')}</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[1, 2, 3, 4, 5, 6].map((num) => (
+                      <div key={num} className="flex items-center space-x-2">
                         <Checkbox
-                          checked={homeTypes.includes(type)}
-                          onCheckedChange={checked => {
-                            setHomeTypes(prev => checked ? [...prev, type] : prev.filter(t => t !== type));
+                          id={`bedroom-${num}`}
+                          checked={bedrooms.includes(num)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setBedrooms([...bedrooms, num]);
+                            } else {
+                              setBedrooms(bedrooms.filter(b => b !== num));
+                            }
                           }}
-                        /> {type}
+                        />
+                        <label htmlFor={`bedroom-${num}`} className="text-sm">
+                          {num}+
+                        </label>
+                      </div>
+                    ))}
+                </div>
+                </div>
+                {/* Bathrooms */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">{t('bathrooms')}</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <div key={num} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`bathroom-${num}`}
+                          checked={bathrooms.includes(num)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setBathrooms([...bathrooms, num]);
+                            } else {
+                              setBathrooms(bathrooms.filter(b => b !== num));
+                            }
+                          }}
+                        />
+                        <label htmlFor={`bathroom-${num}`} className="text-sm">
+                          {num}+
                       </label>
+                      </div>
                     ))}
                   </div>
                 </div>
-                {/* Property Status RadioGroup */}
-                {!purpose && (
+                {/* Property Type */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">{t('propertyType')}</label>
+                  <RadioGroup value={propertyType[0] || ""} onValueChange={(value) => setPropertyType([value])}>
+                    {['Single Family', 'Condo', 'Townhouse', 'Multi-Family'].map((type) => (
+                      <div key={type} className="flex items-center space-x-2">
+                        <RadioGroupItem value={type} id={`type-${type}`} />
+                        <label htmlFor={`type-${type}`} className="text-sm">{type}</label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+                {/* Status */}
                   <div>
-                    <label className="block text-sm font-medium mb-1">Property Status</label>
-                    <RadioGroup value={propertyStatus} onValueChange={setPropertyStatus} className="flex gap-4">
-                    <RadioGroupItem value="any" id="status-any" />
-                    <label htmlFor="status-any" className="text-sm">Any</label>
-                    <RadioGroupItem value="for-sale" id="status-for-sale" />
-                    <label htmlFor="status-for-sale" className="text-sm">For Sale</label>
-                    <RadioGroupItem value="for-rent" id="status-for-rent" />
-                    <label htmlFor="status-for-rent" className="text-sm">For Rent</label>
-                    <RadioGroupItem value="sold" id="status-sold" />
-                    <label htmlFor="status-sold" className="text-sm">Sold</label>
+                  <label className="block text-sm font-medium mb-2">{t('status')}</label>
+                  <RadioGroup value={status[0] || ""} onValueChange={(value) => setStatus([value])}>
+                    {['FOR_SALE', 'FOR_RENT'].map((s) => (
+                      <div key={s} className="flex items-center space-x-2">
+                        <RadioGroupItem value={s} id={`status-${s}`} />
+                        <label htmlFor={`status-${s}`} className="text-sm">
+                          {s === 'FOR_SALE' ? t('forSale') : t('forRent')}
+                        </label>
+                      </div>
+                    ))}
                     </RadioGroup>
                   </div>
-                )}
               </div>
               <AlertDialogFooter>
-                <AlertDialogCancel>Close</AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <Button type="button" onClick={handleApplyFilters}>Apply Filters</Button>
+                <AlertDialogCancel onClick={handleClearFilters}>
+                  {t('clearFilters')}
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={handleApplyFilters}>
+                  {t('applyFilters')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-
-          {/* Clear Filters Button (outside dialog) */}
-          <Button
-            className="h-12 px-6 text-base text-gray-600 border-gray-400 hover:text-blue-800 font-semibold border"
-            variant="outline"
-            type="button"
-            onClick={handleClearFilters}
-          >
-            Clear Filters
-          </Button>
         </div>
-      </div>
-      <div className="flex flex-col md:flex-row gap-6 max-w-[1600px] mx-auto px-4 py-8">
+
+        {/* Main Content */}
+        <div className="flex flex-col md:flex-row gap-6">
         {/* Left: Map */}
-        <div className="md:w-[45%] w-full h-[150px] md:h-[calc(100vh-120px)] bg-gray-100 rounded-2xl shadow relative flex items-center justify-center overflow-hidden md:sticky md:top-8 md:self-start">
-          {/* Calculate the centroid of filtered houses for map center */}
+          <div className="md:w-1/2 w-full md:h-[calc(100vh-120px)] h-[50vh] rounded-lg overflow-hidden border border-gray-200">
           {(() => {
-            let mapCenter: [number, number] = [39.8283, -98.5795];
+              let mapCenter: [number, number] = [40.7128, -74.0060]; // Default to NYC
             if (filtered.length > 0) {
               const latSum = filtered.reduce((sum, h) => sum + h.latitude, 0);
               const lngSum = filtered.reduce((sum, h) => sum + h.longitude, 0);
@@ -521,21 +484,21 @@ function ListingPageContent() {
                 zoom={filtered.length === 1 ? 14 : 8}
               />
             ) : (
-              <div className="flex items-center justify-center gap-2">
+              <div className="h-full flex items-center justify-center gap-2">
                 <svg className="animate-spin h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                 </svg>
-                <div className="text-gray-400">Loading map...</div>
+                  <div className="text-gray-400">{t('loadingMap')}</div>
               </div>
             );
           })()}
         </div>
         {/* Right: Grid */}
-        <div className="flex-1 flex flex-col max-h-[calc(100vh-120px)] overflow-y-auto p-3">
+        <div className="md:w-1/2 w-full flex-1 flex flex-col md:max-h-[calc(100vh-120px)] max-h-fit overflow-y-auto p-3">
           <h2 className="text-2xl font-bold mb-4">Stickball {getPageTitle()}</h2>
           {/* Grid of Houses */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {loading ? (
               // Show skeleton cards while loading
               Array.from({ length: 8 }).map((_, index) => (
@@ -547,7 +510,7 @@ function ListingPageContent() {
               // Show actual house cards when loaded
               filtered.map((house) => (
                 <div key={house.id} className="group relative">
-                  <Card className="min-w-[300px] !pt-0 pb-0 gap-0 rounded-lg shadow-sm border-0 overflow-hidden bg-white h-full flex flex-col hover:scale-101 transition-all duration-300 group-hover:shadow-md">
+                  <Card className="!pt-0 pb-0 gap-0 rounded-lg shadow-sm border-0 md:overflow-hidden overflow-visible bg-white h-full flex flex-col hover:scale-101 transition-all duration-300 group-hover:shadow-md">
                     {/* Image Section */}
                     <div className="relative">
                       <Image
@@ -565,11 +528,11 @@ function ListingPageContent() {
                       {/* Status Badge */}
                       <div className="absolute top-1.5 left-1.5">
                         <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm ${house.homeStatus === 'RECENTLY_SOLD' ? 'bg-gray-500' : house.homeStatus === 'For Rent' ? 'bg-yellow-500' : 'bg-green-500'}`}>
-                          {house.homeStatus === 'RECENTLY_SOLD' ? 'Sold' : house.homeStatus}
+                            {house.homeStatus === 'RECENTLY_SOLD' ? homepageT('propertyCard.sold') : house.homeStatus}
                         </span>
                       </div>
                       {/* Property Type Badge */}
-                      <div className="absolute top-1.5 right-1.5">
+                      <div className="absolute md:top-1.5 md:right-1.5 top-7 left-1.5">
                         <span className="bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm">
                           {house.homeType}
                         </span>
@@ -596,7 +559,7 @@ function ListingPageContent() {
                       {/* Price */}
                       <div className="flex items-center gap-1 mb-1.5">
                         <div className="text-base font-bold text-blue-700">{house.currency} {house.price.toLocaleString()}</div>
-                        <span className="text-xs text-gray-500">/ {house.homeStatus === 'For Rent' ? 'month' : 'total'}</span>
+                          <span className="text-xs text-gray-500">/ {house.homeStatus === 'For Rent' ? homepageT('propertyCard.month') : homepageT('propertyCard.total')}</span>
                       </div>
                       {/* Address (2 lines) */}
                       <div className="mb-1.5">
@@ -608,46 +571,46 @@ function ListingPageContent() {
                         </div>
                       </div>
                       {/* Key Features Grid */}
-                      <div className="grid grid-cols-3 gap-1 mb-2">
-                        <div className="flex flex-col items-center p-1.5 bg-blue-50 rounded-sm group-hover:bg-blue-100 transition-colors">
-                          <BedDouble className="w-3 h-3 text-blue-600 mb-0.5" />
+                      <div className="grid md:grid-cols-3 grid-cols-1 gap-1 mb-2">
+                        <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-blue-50 rounded-sm group-hover:bg-blue-100 transition-colors">
+                          <BedDouble className="w-3 h-3 text-blue-600 md:mb-0.5 mb-0" />
                           <span className="text-xs font-medium text-gray-700">{house.bedrooms}</span>
-                          <span className="text-xs text-gray-500">beds</span>
+                            <span className="text-xs text-gray-500">{homepageT('propertyCard.beds')}</span>
                         </div>
-                        <div className="flex flex-col items-center p-1.5 bg-green-50 rounded-sm group-hover:bg-green-100 transition-colors">
-                          <Bath className="w-3 h-3 text-green-600 mb-0.5" />
+                        <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-green-50 rounded-sm group-hover:bg-green-100 transition-colors">
+                          <Bath className="w-3 h-3 text-green-600 md:mb-0.5 mb-0" />
                           <span className="text-xs font-medium text-gray-700">{house.bathrooms}</span>
-                          <span className="text-xs text-gray-500">baths</span>
+                            <span className="text-xs text-gray-500">{homepageT('propertyCard.baths')}</span>
                         </div>
-                        <div className="flex flex-col items-center p-1.5 bg-purple-50 rounded-sm group-hover:bg-purple-100 transition-colors">
-                          <Ruler className="w-3 h-3 text-purple-600 mb-0.5" />
+                        <div className="flex md:flex-col flex-row md:space-x-0 space-x-1 justify-center items-center p-1.5 bg-purple-50 rounded-sm group-hover:bg-purple-100 transition-colors">
+                          <Ruler className="w-3 h-3 text-purple-600 md:mb-0.5 mb-0" />
                           <span className="text-xs font-medium text-gray-700">{house.livingArea.toLocaleString()}</span>
-                          <span className="text-xs text-gray-500">sqft</span>
-                        </div>
+                            <span className="text-xs text-gray-500">{homepageT('propertyCard.sqft')}</span>
+                          </div>
                       </div>
                       {/* Location and Date */}
-                      <div className="flex items-center justify-between mb-2 text-xs text-gray-600">
+                      <div className="flex md:flex-row flex-col md:space-x-0 space-x-1 md:items-center items-start justify-between mb-2 text-xs text-gray-600">
                         <div className="flex items-center gap-1">
                           <MapPin className="w-2.5 h-2.5 text-red-500" />
                           <span className="truncate">{house.city}, {house.state}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="w-2.5 h-2.5 text-gray-400" />
-                          <span>Listed {new Date(house.datePostedString).toLocaleDateString()}</span>
-                        </div>
+                            <span>{homepageT('propertyCard.listed')} {new Date(house.datePostedString).toLocaleDateString()}</span>
+                          </div>
                       </div>
                       {/* Action Button */}
                       <Button
                         onClick={() => router.push(`/houses/${house.id}`)}
-                        className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-1.5 rounded-md shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-101 text-xs flex items-center justify-center ${house.homeStatus === 'RECENTLY_SOLD' ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        className={`w-full text-xs md:text-base bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold md:py-1.5 py-1 !md:h-10 !h-6 rounded-sm shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-101 text-xs flex items-center justify-center ${house.homeStatus === 'RECENTLY_SOLD' ? 'opacity-60 cursor-not-allowed' : ''}`}
                         disabled={house.homeStatus === 'RECENTLY_SOLD'}
                       >
-                        <Eye className="w-2.5 h-2.5 mr-1" />
+                        <Eye className="md:w-2.5 md:h-2.5 w-2 h-2 md:mr-1 mr-0" />
                         {house.homeStatus === 'RECENTLY_SOLD'
-                          ? 'Sold'
+                            ? homepageT('propertyCard.sold')
                           : house.homeStatus === 'FOR_RENT'
-                            ? 'Rent this house'
-                            : 'Buy this house'}
+                              ? homepageT('propertyCard.rentThisHouse')
+                              : homepageT('propertyCard.buyThisHouse')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -655,8 +618,9 @@ function ListingPageContent() {
               ))
             )}
             {!loading && filtered.length === 0 && (
-              <div className="col-span-full text-center text-gray-400 py-12 text-lg">No properties found.</div>
+                <div className="col-span-full text-center text-gray-400 py-12 text-lg">{t('noResults')}</div>
             )}
+            </div>
           </div>
         </div>
       </div>

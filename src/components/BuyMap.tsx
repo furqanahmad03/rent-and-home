@@ -1,6 +1,7 @@
 "use client";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { useTranslations } from 'next-intl';
 
 interface House {
   id: string;
@@ -24,6 +25,8 @@ interface BuyMapProps {
 }
 
 export default function BuyMap({ houses, defaultCenter, onMarkerClick }: BuyMapProps) {
+  const t = useTranslations('houses.detail');
+  
   return (
     <MapContainer
       center={defaultCenter}

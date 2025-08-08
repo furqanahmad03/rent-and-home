@@ -19,7 +19,7 @@ export default function RootLayout({
         className="font-sans antialiased"
         suppressHydrationWarning
       >
-        {children}
+            {children}
       </body>
     </html>
   );

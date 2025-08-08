@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,8 @@ interface UserStats {
 }
 
 export default function ProfilePage() {
+  const t = useTranslations('profile');
+  const { locale } = useParams();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -118,6 +121,7 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     setEditing(false);
+    // Reset form to original values
     setEditForm({
       name: profile?.name || "",
       currentPassword: "",
@@ -128,116 +132,50 @@ export default function ProfilePage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setEditForm(prev => ({ ...prev, [name]: value }));
-    
-    // Real-time password validation
-    if (name === 'newPassword' || name === 'confirmPassword') {
-      validatePassword();
-    }
+    setEditForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const validatePassword = () => {
-    const { newPassword, confirmPassword } = editForm;
+    if (editForm.newPassword && !editForm.currentPassword) {
+      toast.error('Current password is required to change password', {
+        icon: '⚠️',
+        duration: 4000,
+      });
+      return false;
+    }
     
-    // Clear previous toasts
-    toast.dismiss();
+    if (editForm.newPassword && editForm.newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long', {
+        icon: '⚠️',
+        duration: 4000,
+      });
+      return false;
+    }
     
-    if (newPassword) {
-      // Check minimum length
-      if (newPassword.length < 8) {
-        toast.error('Password must be at least 8 characters long', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // Check for uppercase letter
-      if (!/[A-Z]/.test(newPassword)) {
-        toast.error('Password must contain at least one uppercase letter', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // Check for lowercase letter
-      if (!/[a-z]/.test(newPassword)) {
-        toast.error('Password must contain at least one lowercase letter', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // Check for number
-      if (!/\d/.test(newPassword)) {
-        toast.error('Password must contain at least one number', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // Check for special character
-      if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
-        toast.error('Password must contain at least one special character', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // Check if passwords match
-      if (confirmPassword && newPassword !== confirmPassword) {
-        toast.error('Passwords do not match', {
-          icon: '⚠️',
-          duration: 3000,
-        });
-        return false;
-      }
-      
-      // All validations passed
-      if (confirmPassword && newPassword === confirmPassword) {
-        toast.success('Password meets all requirements!', {
-          icon: '✅',
-          duration: 2000,
-        });
-        return true;
-      }
+    if (editForm.newPassword && editForm.newPassword !== editForm.confirmPassword) {
+      toast.error('New passwords do not match', {
+        icon: '⚠️',
+        duration: 4000,
+      });
+      return false;
     }
     
     return true;
   };
 
   const handleSave = async () => {
-    try {
-      // Validate password change if new password is provided
-      if (editForm.newPassword) {
-        if (!editForm.currentPassword) {
-          toast.error('Current password is required to change password', {
-            icon: '⚠️',
-            duration: 4000,
-          });
-          return;
-        }
-        
-        // Run password validation
-        if (!validatePassword()) {
-          return;
-        }
-        
-        if (editForm.newPassword !== editForm.confirmPassword) {
-          toast.error('New passwords do not match', {
-            icon: '⚠️',
-            duration: 4000,
-          });
-          return;
-        }
-      }
+    if (!validatePassword()) {
+      return;
+    }
 
-      // TODO: Implement profile update API
-      // For now, just update local state
+    try {
+      // Here you would typically make an API call to update the profile
+      // For now, we'll just simulate the update
+      
+      // Update local state
       if (profile) {
         setProfile({
           ...profile,
@@ -245,6 +183,7 @@ export default function ProfilePage() {
           updatedAt: new Date().toISOString()
         });
       }
+      
       setEditing(false);
       
       // Clear password fields
@@ -255,7 +194,7 @@ export default function ProfilePage() {
         confirmPassword: ""
       }));
       
-      toast.success('Profile updated successfully!', {
+      toast.success(t('profileUpdated'), {
         icon: '✅',
         duration: 3000,
       });
@@ -284,16 +223,16 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto py-10 px-4">
       {/* Back to Dashboard */}
       <div className="mb-6">
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition">
+        <Link href={`/${locale}/dashboard`} className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition">
           <ArrowLeft className="w-4 h-4" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
       </div>
 
       {/* Profile Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Profile</h1>
-        <p className="text-gray-600">Manage your account and view your activity</p>
+        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
+        <p className="text-gray-600">{t('manageAccount')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -304,12 +243,12 @@ export default function ProfilePage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                Basic Information
+                {t('personalInfo')}
               </CardTitle>
               {!editing && (
                 <Button variant="outline" size="sm" onClick={handleEdit}>
                   <Edit className="w-4 h-4 mr-2" />
-                  Edit
+                  {t('edit')}
                 </Button>
               )}
             </CardHeader>
@@ -317,72 +256,73 @@ export default function ProfilePage() {
               {editing ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Name</label>
+                    <label className="block text-sm font-medium mb-2">{t('name')}</label>
                     <Input
                       name="name"
                       value={editForm.name}
                       onChange={handleInputChange}
-                      placeholder="Your name"
+                      placeholder={t('enterName')}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">{t('email')}</label>
                     <Input
                       name="email"
                       type="email"
                       value={profile?.email || ""}
                       disabled
                       className="bg-gray-100 cursor-not-allowed"
-                      placeholder="your.email@example.com"
+                      placeholder={t('enterEmail')}
                     />
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('emailCannotBeChanged')}</p>
                   </div>
                   
                   {/* Password Change Section */}
                   <div className="border-t pt-4 mt-4">
-                    <h4 className="text-sm font-medium mb-3">Change Password (Optional)</h4>
+                    <h4 className="text-sm font-medium mb-3">{t('changePassword')}</h4>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Current Password</label>
+                        <label className="block text-sm font-medium mb-2">{t('currentPassword')}</label>
                         <Input
                           name="currentPassword"
                           type="password"
                           value={editForm.currentPassword}
                           onChange={handleInputChange}
-                          placeholder="Enter current password"
+                          placeholder={t('enterCurrentPassword')}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">New Password</label>
+                        <label className="block text-sm font-medium mb-2">{t('newPassword')}</label>
                         <Input
                           name="newPassword"
                           type="password"
                           value={editForm.newPassword}
                           onChange={handleInputChange}
-                          placeholder="Enter new password"
+                          placeholder={t('enterNewPassword')}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Confirm New Password</label>
+                        <label className="block text-sm font-medium mb-2">{t('confirmPassword')}</label>
                         <Input
                           name="confirmPassword"
                           type="password"
                           value={editForm.confirmPassword}
                           onChange={handleInputChange}
-                          placeholder="Confirm new password"
+                          placeholder={t('confirmNewPassword')}
                         />
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button onClick={handleSave}>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Changes
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <Button onClick={handleSave} className="flex items-center gap-2">
+                      <Save className="w-4 h-4" />
+                      {t('saveChanges')}
                     </Button>
-                    <Button variant="outline" onClick={handleCancel}>
-                      <X className="w-4 h-4 mr-2" />
-                      Cancel
+                    <Button variant="outline" onClick={handleCancel} className="flex items-center gap-2">
+                      <X className="w-4 h-4" />
+                      {t('cancel')}
                     </Button>
                   </div>
                 </div>
@@ -392,20 +332,20 @@ export default function ProfilePage() {
                     <User className="w-5 h-5 text-gray-500" />
                     <div>
                       <p className="font-medium">{profile?.name}</p>
-                      <p className="text-sm text-gray-600">Full Name</p>
+                      <p className="text-sm text-gray-600">{t('fullName')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-gray-500" />
                     <div>
                       <p className="font-medium">{profile?.email}</p>
-                      <p className="text-sm text-gray-600">Email Address</p>
+                      <p className="text-sm text-gray-600">{t('emailAddress')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-gray-500" />
                     <div>
-                      <p className="text-sm text-gray-600">Member since</p>
+                      <p className="text-sm text-gray-600">{t('memberSince')}</p>
                       <p className="font-medium">
                         {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}
                       </p>
@@ -421,7 +361,7 @@ export default function ProfilePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                Account Statistics
+                {t('accountStats')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -432,7 +372,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-blue-600">{stats.totalHouses}</p>
-                    <p className="text-sm text-gray-600">Properties Listed</p>
+                    <p className="text-sm text-gray-600">{t('propertiesListed')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-red-50 rounded-lg">
@@ -441,7 +381,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-red-600">{stats.totalFavorites}</p>
-                    <p className="text-sm text-gray-600">Favorited Properties</p>
+                    <p className="text-sm text-gray-600">{t('favoritedProperties')}</p>
                   </div>
                 </div>
               </div>
@@ -453,25 +393,25 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>{t('quickActions')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col !gap-3">
-              <Link href="/dashboard">
+              <Link href={`/${locale}/dashboard`}>
                 <Button variant="outline" className="w-full justify-start">
                   <Home className="w-4 h-4 mr-2" />
-                  My Listings
+                  {t('myListings')}
                 </Button>
               </Link>
-              <Link href="/favorites">
+              <Link href={`/${locale}/favorites`}>
                 <Button variant="outline" className="w-full justify-start">
                   <Heart className="w-4 h-4 mr-2" />
-                  My Favorites
+                  {t('myFavorites')}
                 </Button>
               </Link>
-              <Link href="/dashboard">
+              <Link href={`/${locale}/dashboard`}>
                 <Button variant="outline" className="w-full justify-start">
                   <Edit className="w-4 h-4 mr-2" />
-                  Add New Property
+                  {t('addNewProperty')}
                 </Button>
               </Link>
             </CardContent>
@@ -480,22 +420,22 @@ export default function ProfilePage() {
           {/* Account Status */}
           <Card>
             <CardHeader>
-              <CardTitle>Account Status</CardTitle>
+              <CardTitle>{t('accountStatus')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Email Verified</span>
+                  <span className="text-sm text-gray-600">{t('emailVerified')}</span>
                   <Badge variant="default" className="bg-green-100 text-green-800">
-                    Verified
+                    {t('verified')}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Account Type</span>
-                  <Badge variant="outline">Standard</Badge>
+                  <span className="text-sm text-gray-600">{t('accountType')}</span>
+                  <Badge variant="outline">{t('standard')}</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Last Updated</span>
+                  <span className="text-sm text-gray-600">{t('lastUpdated')}</span>
                   <span className="text-sm font-medium">
                     {profile?.updatedAt ? new Date(profile.updatedAt).toLocaleDateString() : 'N/A'}
                   </span>

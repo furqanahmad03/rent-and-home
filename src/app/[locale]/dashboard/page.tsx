@@ -4,6 +4,7 @@ import * as React from "react";
 import { useEffect, useState, ChangeEvent } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import {
   ColumnDef,
   flexRender,
@@ -116,10 +117,10 @@ const initialForm: HouseForm = {
   zpid: "",
   longitude: "",
   latitude: "",
-
 };
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
   const { data: session, status } = useSession();
   const router = useRouter();
   const [data, setData] = React.useState<House[]>([]);
@@ -208,7 +209,7 @@ export default function DashboardPage() {
       });
 
       if (response.ok) {
-        toast.success('House added successfully!', {
+        toast.success(t('houseAddedSuccess'), {
           icon: '✅',
           duration: 3000,
         });
@@ -284,7 +285,7 @@ export default function DashboardPage() {
           prevData.map(h => h.id === house.id ? result.data : h)
         );
         
-        toast.success('House updated successfully!', {
+        toast.success(t('houseUpdatedSuccess'), {
           icon: '✅',
           duration: 3000,
         });
@@ -329,7 +330,7 @@ export default function DashboardPage() {
       });
 
       if (response.ok) {
-        toast.success('House deleted successfully!', {
+        toast.success(t('houseDeletedSuccess'), {
           icon: '✅',
           duration: 3000,
         });
@@ -361,7 +362,7 @@ export default function DashboardPage() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
-            Address
+            {t('tableColumns.address')}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -390,7 +391,7 @@ export default function DashboardPage() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
-            Price
+            {t('tableColumns.price')}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -416,7 +417,7 @@ export default function DashboardPage() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
-            Status
+            {t('tableColumns.status')}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -442,7 +443,7 @@ export default function DashboardPage() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
-            Type
+            {t('tableColumns.type')}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -464,7 +465,7 @@ export default function DashboardPage() {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-auto p-0 font-semibold hover:bg-transparent"
           >
-            Created
+            {t('tableColumns.created')}
             {column.getIsSorted() === "asc" ? (
               <ArrowUp className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "desc" ? (
@@ -483,7 +484,7 @@ export default function DashboardPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('actions'),
       cell: ({ row }) => (
         <div className="flex gap-2">
           {/* Edit Dialog */}
@@ -495,15 +496,15 @@ export default function DashboardPage() {
                 aria-label="Edit"
                 disabled={row.original.homeStatus === 'SOLD' || row.original.homeStatus === 'RECENTLY_SOLD'}
                 className={row.original.homeStatus === 'SOLD' || row.original.homeStatus === 'RECENTLY_SOLD' ? 'opacity-50 cursor-not-allowed' : ''}
-                title={row.original.homeStatus === 'SOLD' || row.original.homeStatus === 'RECENTLY_SOLD' ? 'Cannot edit sold properties' : 'Edit property'}
+                title={row.original.homeStatus === 'SOLD' || row.original.homeStatus === 'RECENTLY_SOLD' ? t('cannotEditSold') : t('editProperty')}
               >
                 <Pencil className="w-4 h-4" />
               </Button>
             </DialogTrigger>
             <DialogContent className="!max-w-[90vw] !w-full max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Edit House</DialogTitle>
-                <DialogDescription>Edit the details and save changes.</DialogDescription>
+                <DialogTitle>{t('updateHouse')}</DialogTitle>
+                <DialogDescription>{t('editProperty')}</DialogDescription>
               </DialogHeader>
               <form
                 onSubmit={e => {
@@ -511,99 +512,121 @@ export default function DashboardPage() {
                   const formData = new FormData(e.currentTarget);
                   handleEdit(row.original, formData, e);
                 }}
-                className="space-y-4"
+                className="space-y-6"
               >
-                <div>
-                  <label className="block text-xs font-medium mb-1">Street Address</label>
-                  <Input name="streetAddress" defaultValue={row.original.streetAddress} required />
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium mb-1">City</label>
-                    <Input name="city" defaultValue={row.original.city} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">State</label>
-                    <Input name="state" defaultValue={row.original.state} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Zip</label>
-                    <Input name="zipcode" defaultValue={row.original.zipcode} required />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Price</label>
-                    <Input name="price" type="number" defaultValue={row.original.price} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Type</label>
-                    <Input name="homeType" defaultValue={row.original.homeType} required />
-                  </div>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Bedrooms</label>
-                    <Input name="bedrooms" type="number" defaultValue={row.original.bedrooms} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Bathrooms</label>
-                    <Input name="bathrooms" type="number" defaultValue={row.original.bathrooms} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Living Area</label>
-                    <Input name="livingArea" type="number" defaultValue={row.original.livingArea} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Year Built</label>
-                    <Input name="yearBuilt" type="number" defaultValue={row.original.yearBuilt} required />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1">Status</label>
-                  <select name="homeStatus" defaultValue={row.original.homeStatus} className="w-full p-2 border rounded-md">
-                    <option value="FOR_SALE">For Sale</option>
-                    <option value="FOR_RENT">For Rent</option>
-                    <option value="SOLD">Sold</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium mb-1">ZPID (optional)</label>
-                    <Input name="zpid" type="number" defaultValue={row.original.zpid || ''} />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Currency</label>
-                    <Input name="currency" defaultValue={row.original.currency} required />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Longitude</label>
-                    <Input name="longitude" type="number" step="any" defaultValue={row.original.longitude} required />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1">Latitude</label>
-                    <Input name="latitude" type="number" step="any" defaultValue={row.original.latitude} required />
+                {/* Address Fields */}
+                <div className="bg-blue-50/40 rounded-xl p-6">
+                  <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> {t('address')}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="streetAddress" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('streetAddress')}</label>
+                      <Input name="streetAddress" defaultValue={row.original.streetAddress} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="city" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('city')}</label>
+                      <Input name="city" defaultValue={row.original.city} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="state" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('state')}</label>
+                      <Input name="state" defaultValue={row.original.state} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="zipcode" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('zipcode')}</label>
+                      <Input name="zipcode" defaultValue={row.original.zipcode} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="neighborhood" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('neighborhood')}</label>
+                      <Input name="neighborhood" defaultValue={row.original.neighborhood || ''} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="community" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('community')}</label>
+                      <Input name="community" defaultValue={row.original.community || ''} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="subdivision" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('subdivision')}</label>
+                      <Input name="subdivision" defaultValue={row.original.subdivision || ''} />
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium mb-1">Description</label>
-                  <textarea name="description" defaultValue={row.original.description} className="w-full p-2 border rounded-md h-20" />
+                {/* Property Details */}
+                <div className="bg-green-50/40 rounded-xl p-6">
+                  <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> {t('homeInfo')}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="price" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('price')}</label>
+                      <Input name="price" type="number" defaultValue={row.original.price} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="currency" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('currency')}</label>
+                      <Input name="currency" defaultValue={row.original.currency} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="homeType" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('homeType')}</label>
+                      <Input name="homeType" defaultValue={row.original.homeType} placeholder={t('homeTypePlaceholder')} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="homeStatus" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('status')}</label>
+                      <select name="homeStatus" defaultValue={row.original.homeStatus} className="w-full p-2 border rounded-md">
+                        <option value="FOR_SALE">{t('forSale')}</option>
+                        <option value="FOR_RENT">{t('forRent')}</option>
+                        <option value="SOLD">{t('sold')}</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="bedrooms" className="font-semibold text-primary flex items-center gap-2"><BedDouble className="w-4 h-4 text-primary" /> {t('bedrooms')}</label>
+                      <Input name="bedrooms" type="number" defaultValue={row.original.bedrooms} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="bathrooms" className="font-semibold text-primary flex items-center gap-2"><Bath className="w-4 h-4 text-primary" /> {t('bathrooms')}</label>
+                      <Input name="bathrooms" type="number" defaultValue={row.original.bathrooms} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="livingArea" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('livingArea')}</label>
+                      <Input name="livingArea" type="number" defaultValue={row.original.livingArea} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="yearBuilt" className="font-semibold text-primary flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {t('yearBuilt')}</label>
+                      <Input name="yearBuilt" type="number" defaultValue={row.original.yearBuilt} required />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Additional Details */}
+                <div className="bg-purple-50/40 rounded-xl p-6">
+                  <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> {t('additionalDetails')}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="zpid" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('zpid')}</label>
+                      <Input name="zpid" type="number" defaultValue={row.original.zpid || ''} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="longitude" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('longitude')}</label>
+                      <Input name="longitude" type="number" step="any" defaultValue={row.original.longitude} required />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="latitude" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('latitude')}</label>
+                      <Input name="latitude" type="number" step="any" defaultValue={row.original.latitude} required />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label htmlFor="description" className="font-semibold text-primary flex items-center gap-2 mb-2"><Home className="w-4 h-4 text-primary" /> {t('description')}</label>
+                    <Textarea name="description" defaultValue={row.original.description} placeholder={t('descriptionPlaceholder')} className="min-h-[100px]" />
+                  </div>
+                </div>
+
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button type="button" variant="outline" disabled={isSubmitting}>Cancel</Button>
+                    <Button type="button" variant="outline" disabled={isSubmitting}>{t('cancel')}</Button>
                   </DialogClose>
                   <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        Saving...
+                        {t('saving')}
                       </>
                     ) : (
-                      'Save Changes'
+                      t('saveChanges')
                     )}
                   </Button>
                 </DialogFooter>
@@ -619,18 +642,18 @@ export default function DashboardPage() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete House</AlertDialogTitle>
+                                  <AlertDialogTitle>{t('deleteProperty')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to delete this house? This action cannot be undone.
+                  {t('deleteDescription')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => handleDelete(row.original)}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  Delete
+                  {t('delete')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -686,87 +709,87 @@ export default function DashboardPage() {
             <form onSubmit={handleAddHouse} className="space-y-6">
               {/* Address Fields */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> Address</h2>
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> {t('address')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="streetAddress" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> Street Address</label>
+                    <label htmlFor="streetAddress" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('streetAddress')}</label>
                     <Input id="streetAddress" name="streetAddress" value={addForm.streetAddress} onChange={handleInputChange} placeholder="Street Address" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="city" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> City</label>
+                    <label htmlFor="city" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('city')}</label>
                     <Input id="city" name="city" value={addForm.city} onChange={handleInputChange} placeholder="City" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="state" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> State</label>
+                    <label htmlFor="state" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('state')}</label>
                     <Input id="state" name="state" value={addForm.state} onChange={handleInputChange} placeholder="State" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="zipcode" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> Zipcode</label>
+                    <label htmlFor="zipcode" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('zipcode')}</label>
                     <Input id="zipcode" name="zipcode" value={addForm.zipcode} onChange={handleInputChange} placeholder="Zipcode" required />
                   </div>
                 </div>
               </div>
               {/* Property Details */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> Property Details</h2>
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> {t('propertyDetails')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="price" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> Price</label>
+                    <label htmlFor="price" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('price')}</label>
                     <Input id="price" name="price" value={addForm.price} onChange={handleInputChange} placeholder="Price" required type="number" min={0} />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="currency" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> Currency</label>
+                    <label htmlFor="currency" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('currency')}</label>
                     <Input id="currency" name="currency" value={addForm.currency} onChange={handleInputChange} placeholder="Currency" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="bedrooms" className="font-semibold text-primary flex items-center gap-2"><BedDouble className="w-4 h-4 text-primary" /> Bedrooms</label>
+                    <label htmlFor="bedrooms" className="font-semibold text-primary flex items-center gap-2"><BedDouble className="w-4 h-4 text-primary" /> {t('bedrooms')}</label>
                     <Input id="bedrooms" name="bedrooms" value={addForm.bedrooms} onChange={handleInputChange} placeholder="Bedrooms" required type="number" min={0} />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="bathrooms" className="font-semibold text-primary flex items-center gap-2"><Bath className="w-4 h-4 text-primary" /> Bathrooms</label>
+                    <label htmlFor="bathrooms" className="font-semibold text-primary flex items-center gap-2"><Bath className="w-4 h-4 text-primary" /> {t('bathrooms')}</label>
                     <Input id="bathrooms" name="bathrooms" value={addForm.bathrooms} onChange={handleInputChange} placeholder="Bathrooms" required type="number" min={0} />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="livingArea" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> Living Area (sqft)</label>
+                    <label htmlFor="livingArea" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('livingArea')}</label>
                     <Input id="livingArea" name="livingArea" value={addForm.livingArea} onChange={handleInputChange} placeholder="Living Area (sqft)" required type="number" min={0} />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="yearBuilt" className="font-semibold text-primary flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> Year Built</label>
+                    <label htmlFor="yearBuilt" className="font-semibold text-primary flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {t('yearBuilt')}</label>
                     <Input id="yearBuilt" name="yearBuilt" value={addForm.yearBuilt} onChange={handleInputChange} placeholder="Year Built" required type="number" min={1800} />
                   </div>
                 </div>
               </div>
               {/* Home Info */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> Home Info</h2>
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Home className="w-6 h-6 text-primary" /> {t('homeInfo')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="homeType" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> Home Type</label>
+                    <label htmlFor="homeType" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('homeType')}</label>
                     <Input id="homeType" name="homeType" value={addForm.homeType} onChange={handleInputChange} placeholder="Home Type (e.g. Single Family)" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="homeStatus" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> Status</label>
+                    <label htmlFor="homeStatus" className="font-semibold text-primary flex items-center gap-2"><Home className="w-4 h-4 text-primary" /> {t('status')}</label>
                     <select name="homeStatus" value={addForm.homeStatus} onChange={handleInputChange} className="w-full p-2 border rounded-md">
-                      <option value="FOR_SALE">For Sale</option>
-                      <option value="FOR_RENT">For Rent</option>
+                                              <option value="FOR_SALE">{t('forSale')}</option>
+                        <option value="FOR_RENT">{t('forRent')}</option>
                     </select>
                   </div>
                 </div>
               </div>
               {/* Additional Details */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> Additional Details</h2>
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> {t('additionalDetails')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="zpid" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> ZPID (optional)</label>
+                    <label htmlFor="zpid" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('zpid')}</label>
                     <Input id="zpid" name="zpid" value={addForm.zpid} onChange={handleInputChange} placeholder="ZPID" type="number" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="longitude" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> Longitude</label>
+                    <label htmlFor="longitude" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('longitude')}</label>
                     <Input id="longitude" name="longitude" value={addForm.longitude} onChange={handleInputChange} placeholder="Longitude" type="number" step="any" required />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label htmlFor="latitude" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> Latitude</label>
+                    <label htmlFor="latitude" className="font-semibold text-primary flex items-center gap-2"><Ruler className="w-4 h-4 text-primary" /> {t('latitude')}</label>
                     <Input id="latitude" name="latitude" value={addForm.latitude} onChange={handleInputChange} placeholder="Latitude" type="number" step="any" required />
                   </div>
 
@@ -774,12 +797,12 @@ export default function DashboardPage() {
               </div>
               {/* Description */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> Description</h2>
-                <Textarea className="bg-transparent" name="description" value={addForm.description} onChange={handleInputChange} placeholder="Description" rows={4} required />
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><Ruler className="w-6 h-6 text-primary" /> {t('description')}</h2>
+                                  <Textarea className="bg-transparent" name="description" value={addForm.description} onChange={handleInputChange} placeholder={t('descriptionPlaceholder')} rows={4} required />
               </div>
               {/* Images */}
               <div className="bg-blue-50/40 rounded-xl p-6">
-                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><UploadCloud className="w-6 h-6 text-primary" /> Images</h2>
+                <h2 className="text-xl font-bold mb-6 text-primary flex items-center gap-2"><UploadCloud className="w-6 h-6 text-primary" /> {t('images')}</h2>
                 
                 {/* Upload Area */}
                 <div className="relative">
@@ -799,7 +822,7 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center justify-center space-y-2">
                       <UploadCloud className="w-8 h-8 text-gray-400" />
                       <div className="text-sm text-gray-600">
-                        <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
+                        <span className="font-medium text-blue-600">{t('uploadImages')}</span> {t('dragDropImages')}
                       </div>
                       <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB each</p>
                     </div>
@@ -825,9 +848,9 @@ export default function DashboardPage() {
                           >
                             <X className="w-3 h-3" />
                           </button>
-                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg">
-                            Image {idx + 1}
-                          </div>
+                                                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg">
+                              {t('imagePreview')} {idx + 1}
+                            </div>
                         </div>
                       ))}
                     </div>
@@ -835,10 +858,10 @@ export default function DashboardPage() {
                 )}
               </div>
               <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white" type="submit" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Add House'}</Button>
+                                  <DialogClose asChild>
+                    <Button type="button" variant="outline">{t('cancel')}</Button>
+                  </DialogClose>
+                <Button className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white" type="submit" disabled={isSubmitting}>{isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : t('addHouse')}</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -846,7 +869,7 @@ export default function DashboardPage() {
       </div>
       <div className="mb-4 flex items-center gap-4">
         <Input
-          placeholder="Search address..."
+          placeholder={t('searchPlaceholder')}
           className="max-w-xs"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -885,7 +908,7 @@ export default function DashboardPage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No houses found.
+                  {t('noHousesFound')}
                 </TableCell>
               </TableRow>
             )}
@@ -899,7 +922,7 @@ export default function DashboardPage() {
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          {t('previous')}
         </Button>
         <Button
           variant="outline"
@@ -907,7 +930,7 @@ export default function DashboardPage() {
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          {t('next')}
         </Button>
       </div>
     </div>

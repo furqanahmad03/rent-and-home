@@ -27,6 +27,7 @@ import {
 import { useSession } from "next-auth/react";
 import toast from 'react-hot-toast';
 import BookingDialog from "@/components/BookingDialog";
+import { useTranslations } from 'next-intl';
 
 const StaticMap = dynamic(() => import("@/components/StaticMap"), { ssr: false });
 
@@ -62,13 +63,15 @@ interface House {
 }
 
 export default function ListingDetailPage() {
-  const { id } = useParams();
+  const { id, locale } = useParams();
   const [house, setHouse] = useState<House | null>(null);
   const [loading, setLoading] = useState(true);
   const [similarHouses, setSimilarHouses] = useState<House[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const t = useTranslations('houses.detail');
+  const homepageT = useTranslations('homepage');
 
   // Redirect to home page if not authenticated
   useEffect(() => {
@@ -125,7 +128,7 @@ export default function ListingDetailPage() {
           method: 'DELETE',
         });
         setIsFavorite(false);
-        toast.success('Removed from favorites!', {
+        toast.success(t('removedFromFavorites'), {
           icon: '💔',
           duration: 3000,
         });
@@ -139,14 +142,14 @@ export default function ListingDetailPage() {
           body: JSON.stringify({ houseId: house.id }),
         });
         setIsFavorite(true);
-        toast.success('Added to favorites!', {
+        toast.success(t('addedToFavorites'), {
           icon: '❤️',
           duration: 3000,
         });
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      toast.error('Failed to update favorites. Please try again.', {
+      toast.error(t('failedToUpdateFavorites'), {
         icon: '❌',
         duration: 4000,
       });
@@ -309,10 +312,10 @@ export default function ListingDetailPage() {
     <div className="max-w-7xl mx-auto px-4 py-10">
       {/* Back to Listings */}
       <div className="mb-6">
-        <Link href="/houses" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition">
-          <ArrowLeft className="w-4 h-4" />
-          Back to {isRent ? 'Rentals' : 'Listings'}
-        </Link>
+                  <Link href={`/${locale}/houses`} className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition">
+            <ArrowLeft className="w-4 h-4" />
+            {isRent ? t('backToRentals') : t('backToListings')}
+          </Link>
       </div>
 
       {/* Carousel + View All Photos Modal */}
@@ -324,14 +327,14 @@ export default function ListingDetailPage() {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button className="absolute top-4 right-4 z-30 bg-white/90 hover:bg-white text-blue-700 font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2 border border-blue-100">
-                    <span>View all photos</span>
+                    <span>{t('viewAllPhotos')}</span>
                   </button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="!max-w-[90vw] !max-h-[90vh] p-0 overflow-hidden">
                   <AlertDialogHeader className="sticky top-0 z-10 bg-white shadow-sm flex flex-row items-center justify-between px-8 py-4 border-b">
                     <div className="flex items-center gap-4">
-                      <AlertDialogTitle className="text-2xl font-bold">All Photos</AlertDialogTitle>
-                      <span className="text-base text-gray-500 font-medium">{house.pictures?.length ?? 0} photo{(house.pictures?.length ?? 0) > 1 ? 's' : ''}</span>
+                      <AlertDialogTitle className="text-2xl font-bold">{t('allPhotos')}</AlertDialogTitle>
+                                             <span className="text-base text-gray-500 font-medium">{house.pictures?.length ?? 0} {(house.pictures?.length ?? 0) > 1 ? t('photos') : t('photo')}</span>
                     </div>
                     <AlertDialogCancel className="rounded-full p-2 bg-gray-100 hover:bg-gray-200 ml-auto">
                       <X className="w-6 h-6" />
@@ -364,7 +367,7 @@ export default function ListingDetailPage() {
                         ? 'bg-red-500 text-white border-red-500 hover:bg-red-600' 
                         : 'bg-white/90 text-gray-600 border-gray-200 hover:bg-white hover:text-red-500'
                   }`}
-                  title={session?.user?.id === house.ownerId ? "You can't favorite your own property" : isFavorite ? "Remove from favorites" : "Add to favorites"}
+                                     title={session?.user?.id === house.ownerId ? t('cantFavoriteOwnProperty') : isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
                 >
                   <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                 </button>
@@ -392,7 +395,7 @@ export default function ListingDetailPage() {
               </Carousel>
             </>
           ) : (
-            <div className="w-full h-[450px] bg-gray-100 rounded-2xl">No images</div>
+            <div className="w-full h-[450px] bg-gray-100 rounded-2xl">{t('noImages')}</div>
           )}
         </div>
       </div>
@@ -401,25 +404,25 @@ export default function ListingDetailPage() {
         <div className="flex flex-wrap gap-8 items-center justify-between w-full">
           <div className="flex items-center gap-2">
             <div className="text-3xl font-bold text-blue-700">{house.currency} {house.price.toLocaleString()}</div>
-            <span className="text-sm text-gray-600">/ {isRent ? 'month' : 'total'}</span>
+                         <span className="text-sm text-gray-600">/ {isRent ? t('month') : t('total')}</span>
           </div>
           <div className="flex items-center gap-2">
             <BedDouble className="w-6 h-6 text-blue-600" />
-            <span className="font-semibold">{house.bedrooms} beds</span>
+                         <span className="font-semibold">{house.bedrooms} {t('beds')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Bath className="w-6 h-6 text-blue-600" />
-            <span className="font-semibold">{house.bathrooms} baths</span>
+                         <span className="font-semibold">{house.bathrooms} {t('baths')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Ruler className="w-6 h-6 text-blue-600" />
-            <span className="font-semibold">{house.livingArea.toLocaleString()} sqft</span>
+            <span className="font-semibold">{house.livingArea.toLocaleString()} {t('sqft')}</span>
           </div>
           <div className="flex items-center gap-2">
             <Home className="w-6 h-6 text-blue-600" />
             <span className="font-semibold">{house.homeType}</span>
           </div>
-          <Badge variant={isSold ? "secondary" : "default"}>{isSold ? "Sold" : house.homeStatus}</Badge>
+          <Badge variant={isSold ? "secondary" : "default"}>{isSold ? t('sold') : house.homeStatus}</Badge>
           <div className="flex items-center gap-2">
             <MapPin className="w-6 h-6 text-blue-600" />
             <span className="font-semibold">{house.city}, {house.state}</span>
@@ -439,20 +442,20 @@ export default function ListingDetailPage() {
           <MapPin className="w-5 h-5" />
           {house.streetAddress}, {house.city}, {house.state} {house.zipcode}
         </div>
-        <Badge variant={isSold ? "secondary" : "default"}>{isSold ? "Sold" : house.homeStatus}</Badge>
-        <Badge variant="secondary">Listed: {house.datePostedString}</Badge>
-        {pricePerSqft && <Badge variant="outline">${pricePerSqft}/sqft</Badge>}
+        <Badge variant={isSold ? "secondary" : "default"}>{isSold ? t('sold') : house.homeStatus}</Badge>
+        <Badge variant="secondary">{t('listed')}: {house.datePostedString}</Badge>
+        {pricePerSqft && <Badge variant="outline">${pricePerSqft}{t('perSqft')}</Badge>}
       </div>
       <div className="flex flex-wrap gap-8 items-center mb-6 text-lg">
-        <div className="flex items-center gap-2"><BedDouble className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.bedrooms}</span> beds</div>
-        <div className="flex items-center gap-2"><Bath className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.bathrooms}</span> baths</div>
-        <div className="flex items-center gap-2"><Ruler className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.livingArea.toLocaleString()}</span> sqft</div>
-        <div className="flex items-center gap-2"><Calendar className="w-6 h-6 text-blue-600" /> Built {house.yearBuilt}</div>
+        <div className="flex items-center gap-2"><BedDouble className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.bedrooms}</span> {t('beds')}</div>
+        <div className="flex items-center gap-2"><Bath className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.bathrooms}</span> {t('baths')}</div>
+        <div className="flex items-center gap-2"><Ruler className="w-6 h-6 text-blue-600" /> <span className="font-bold">{house.livingArea.toLocaleString()}</span> {t('sqft')}</div>
+        <div className="flex items-center gap-2"><Calendar className="w-6 h-6 text-blue-600" /> {t('built', { year: house.yearBuilt })}</div>
       </div>
 
       {/* Description */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Description</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('description')}</h2>
         <div className="text-gray-700 leading-relaxed">
           {house.description}
         </div>
@@ -460,25 +463,25 @@ export default function ListingDetailPage() {
       {/* Iconic Details Section */}
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl p-8 border border-gray-100 shadow-sm">
         <div className="space-y-4">
-          <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-blue-600" /><span className="font-semibold">Address:</span> {house.streetAddress}, {house.city}, {house.state} {house.zipcode}</div>
-          <div className="flex items-center gap-3"><Tag className="w-5 h-5 text-gray-500" /><span className="font-semibold">Status:</span><Badge variant="secondary" className="ml-2">{house.homeStatus}</Badge></div>
-          <div className="flex items-center gap-3"><Home className="w-5 h-5 text-blue-600" /><span className="font-semibold">Type:</span> {house.homeType}</div>
-          <div className="flex items-center gap-3"><Ruler className="w-5 h-5 text-purple-600" /><span className="font-semibold">Living Area:</span> {house.livingArea.toLocaleString()} sqft</div>
-          <div className="flex items-center gap-3"><BedDouble className="w-5 h-5 text-blue-600" /><span className="font-semibold">Bedrooms:</span> {house.bedrooms}</div>
-          <div className="flex items-center gap-3"><Bath className="w-5 h-5 text-green-600" /><span className="font-semibold">Bathrooms:</span> {house.bathrooms}</div>
-          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">Year Built:</span> {house.yearBuilt}</div>
-          <div className="flex items-center gap-3"><Star className="w-5 h-5 text-yellow-500" /><span className="font-semibold">Days on Stickball:</span> {house.daysOnStickball ?? 'N/A'}</div>
-          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">Date Posted:</span> {house.datePostedString}</div>
-          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">Created At:</span> {house.createdAt}</div>
-          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">Updated At:</span> {house.updatedAt}</div>
+          <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-blue-600" /><span className="font-semibold">{t('address')}:</span> {house.streetAddress}, {house.city}, {house.state} {house.zipcode}</div>
+          <div className="flex items-center gap-3"><Tag className="w-5 h-5 text-gray-500" /><span className="font-semibold">{t('status')}:</span><Badge variant="secondary" className="ml-2">{house.homeStatus}</Badge></div>
+          <div className="flex items-center gap-3"><Home className="w-5 h-5 text-blue-600" /><span className="font-semibold">{t('type')}:</span> {house.homeType}</div>
+          <div className="flex items-center gap-3"><Ruler className="w-5 h-5 text-purple-600" /><span className="font-semibold">{t('livingArea')}:</span> {house.livingArea.toLocaleString()} {t('sqft')}</div>
+          <div className="flex items-center gap-3"><BedDouble className="w-5 h-5 text-blue-600" /><span className="font-semibold">{t('bedrooms')}:</span> {house.bedrooms}</div>
+          <div className="flex items-center gap-3"><Bath className="w-5 h-5 text-green-600" /><span className="font-semibold">{t('bathrooms')}:</span> {house.bathrooms}</div>
+          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('yearBuilt')}:</span> {t('built', { year: house.yearBuilt })}</div>
+          <div className="flex items-center gap-3"><Star className="w-5 h-5 text-yellow-500" /><span className="font-semibold">{t('daysOnStickball')}:</span> {house.daysOnStickball ?? t('na')}</div>
+          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('datePosted')}:</span> {house.datePostedString}</div>
+          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('createdAt')}:</span> {house.createdAt}</div>
+          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('updatedAt')}:</span> {house.updatedAt}</div>
         </div>
         <div className="space-y-4">
-          <div className="flex items-center gap-3"><Hash className="w-5 h-5 text-gray-500" /><span className="font-semibold">ZPID:</span> {house.zpid ?? 'N/A'}</div>
-          <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-gray-400" /><span className="font-semibold">Neighborhood:</span> {house.neighborhood ?? 'N/A'}</div>
-          <div className="flex items-center gap-3"><Users className="w-5 h-5 text-blue-400" /><span className="font-semibold">Community:</span> {house.community ?? 'N/A'}</div>
-          <div className="flex items-center gap-3"><Layers className="w-5 h-5 text-purple-400" /><span className="font-semibold">Subdivision:</span> {house.subdivision ?? 'N/A'}</div>
-          <div className="flex items-center gap-3"><Globe className="w-5 h-5 text-green-500" /><span className="font-semibold">Latitude:</span> {house.latitude}</div>
-          <div className="flex items-center gap-3"><Globe className="w-5 h-5 text-green-500" /><span className="font-semibold">Longitude:</span> {house.longitude}</div>
+          <div className="flex items-center gap-3"><Hash className="w-5 h-5 text-gray-500" /><span className="font-semibold">{t('zpid')}:</span> {house.zpid ?? t('na')}</div>
+          <div className="flex items-center gap-3"><MapPin className="w-5 h-5 text-gray-400" /><span className="font-semibold">{t('neighborhood')}:</span> {house.neighborhood ?? t('na')}</div>
+          <div className="flex items-center gap-3"><Users className="w-5 h-5 text-blue-400" /><span className="font-semibold">{t('community')}:</span> {house.community ?? t('na')}</div>
+          <div className="flex items-center gap-3"><Layers className="w-5 h-5 text-purple-400" /><span className="font-semibold">{t('subdivision')}:</span> {house.subdivision ?? t('na')}</div>
+          <div className="flex items-center gap-3"><Globe className="w-5 h-5 text-green-500" /><span className="font-semibold">{t('latitude')}:</span> {house.latitude}</div>
+          <div className="flex items-center gap-3"><Globe className="w-5 h-5 text-green-500" /><span className="font-semibold">{t('longitude')}:</span> {house.longitude}</div>
         </div>
       </div>
 
@@ -512,20 +515,20 @@ export default function ListingDetailPage() {
             className="w-full font-semibold py-4 text-lg bg-gray-400 cursor-not-allowed text-white"
             disabled
           >
-            You posted this property
+            {t('youPostedThisProperty')}
           </Button>
         ) : isSold ? (
           <Button
             className="w-full font-semibold py-4 text-lg bg-blue-600 hover:bg-blue-700 opacity-60 cursor-not-allowed text-white"
             disabled
           >
-            Sold
+            {t('sold')}
           </Button>
         ) : (
           <BookingDialog
             trigger={
               <Button className="w-full font-semibold py-4 text-lg bg-blue-600 hover:bg-blue-700 text-white">
-                Schedule a Tour
+                {t('scheduleATour')}
               </Button>
             }
           />
@@ -542,7 +545,7 @@ export default function ListingDetailPage() {
                     key={house.id}
                     className="flex flex-col items-stretch basis-full sm:basis-1/2 xl:basis-1/3"
                   >
-                    <Link href={`/houses/${house.id}`} className="block group">
+                    <Link href={`/${locale}/houses/${house.id}`} className="block group">
                       <Card className="min-w-[250px] !pt-0 pb-0 gap-0 rounded-lg shadow-sm border-0 overflow-hidden bg-white h-full flex flex-col hover:scale-101 transition-all duration-300 group-hover:shadow-md">
                         {/* Image Section */}
                         <div className="relative">
@@ -560,7 +563,7 @@ export default function ListingDetailPage() {
                           {/* Status Badge */}
                           <div className="absolute top-1.5 left-1.5">
                             <span className={`text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm ${house.homeStatus === 'RECENTLY_SOLD' ? 'bg-gray-500' : house.homeStatus === 'For Rent' ? 'bg-yellow-500' : 'bg-green-500'}`}>
-                              {house.homeStatus === 'RECENTLY_SOLD' ? 'Sold' : house.homeStatus}
+                              {house.homeStatus === 'RECENTLY_SOLD' ? t('sold') : house.homeStatus}
                             </span>
                           </div>
                           {/* Property Type Badge */}
@@ -575,7 +578,7 @@ export default function ListingDetailPage() {
                           {/* Price */}
                           <div className="flex items-center gap-1 mb-1.5">
                             <div className="text-base font-bold text-blue-700">{house.currency} {house.price.toLocaleString()}</div>
-                            <span className="text-xs text-gray-500">/ {house.homeStatus === 'For Rent' ? 'month' : 'total'}</span>
+                            <span className="text-xs text-gray-500">{t('perMonthOrTotal', { status: house.homeStatus === 'For Rent' ? t('month') : t('total') })}</span>
                           </div>
                           {/* Address (2 lines) */}
                           <div className="mb-1.5">
@@ -591,17 +594,17 @@ export default function ListingDetailPage() {
                             <div className="flex flex-col items-center p-1.5 bg-blue-50 rounded-sm group-hover:bg-blue-100 transition-colors">
                               <BedDouble className="w-3 h-3 text-blue-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.bedrooms}</span>
-                              <span className="text-xs text-gray-500">beds</span>
+                              <span className="text-xs text-gray-500">{t('beds')}</span>
                             </div>
                             <div className="flex flex-col items-center p-1.5 bg-green-50 rounded-sm group-hover:bg-green-100 transition-colors">
                               <Bath className="w-3 h-3 text-green-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.bathrooms}</span>
-                              <span className="text-xs text-gray-500">baths</span>
+                              <span className="text-xs text-gray-500">{t('baths')}</span>
                             </div>
                             <div className="flex flex-col items-center p-1.5 bg-purple-50 rounded-sm group-hover:bg-purple-100 transition-colors">
                               <Ruler className="w-3 h-3 text-purple-600 mb-0.5" />
                               <span className="text-xs font-medium text-gray-700">{house.livingArea.toLocaleString()}</span>
-                              <span className="text-xs text-gray-500">sqft</span>
+                              <span className="text-xs text-gray-500">{t('sqft')}</span>
                             </div>
                           </div>
                           {/* Location and Date */}
@@ -612,7 +615,7 @@ export default function ListingDetailPage() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Calendar className="w-2.5 h-2.5 text-gray-400" />
-                              <span>Listed {new Date(house.datePostedString).toLocaleDateString()}</span>
+                              <span>{t('listed')}: {new Date(house.datePostedString).toLocaleDateString()}</span>
                             </div>
                           </div>
                           {/* Action Button */}
@@ -622,10 +625,10 @@ export default function ListingDetailPage() {
                           >
                             <Eye className="w-2.5 h-2.5 mr-1" />
                             {house.homeStatus === 'RECENTLY_SOLD'
-                              ? 'Sold'
+                              ? t('sold')
                               : house.homeStatus === 'FOR_RENT'
-                                ? 'Rent this house'
-                                : 'Buy this house'}
+                                ? t('rentThisHouse')
+                                : t('buyThisHouse')}
                           </Button>
                         </CardContent>
                       </Card>

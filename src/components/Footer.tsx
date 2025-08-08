@@ -13,37 +13,33 @@ const Footer = () => {
       {/* Legal/Disclaimer Section */}
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base mb-6">
         <p>
-            Stickball Group is committed to ensuring digital accessibility for individuals with disabilities. We are continuously working to improve the accessibility of our
-            web experience for everyone, and we welcome feedback and accommodation requests. If you wish to report an issue or seek an accommodation, please
+          {t('accessibilityDescription')}
         </p>
         <Link href="#" className="text-blue-600 underline">
-            Let us know
+          {t('letUsKnow')}
         </Link>
       </div>
 
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base mb-6">
         <p>
-        Stickball, Inc. holds real estate brokerage <Link href="#">licenses</Link> in multiple states. Stickball (Canada), Inc. holds real estate brokerage licenses in multiple provinces.
+          {t('brokerageInfo')}
         </p>
         <Link href="#" className="text-blue-600 underline">
-            § 442-H New York Standard Operating Procedures
+          {t('newYorkProcedures')}
         </Link>
         <Link href="#" className="text-blue-600 underline">
-            § 442-H New York Fair Housing Notice
+          {t('newYorkHousing')}
         </Link>
         <p>
-            TREC: <Link href="#" className="text-blue-600 underline">Information about brokerage services, Consumer protection notice</Link>
+          {t('trecInfo')}
         </p>
-        <p className="mb-4">California DRE #1522444</p>
-        <Link href="#" className="text-blue-600 underline text-base">Contact Stickball, Inc. Brokerage</Link>
+        <p className="mb-4">{t('californiaDre')}</p>
+        <Link href="#" className="text-blue-600 underline text-base">{t('contactBrokerage')}</Link>
       </div>
-
 
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base my-6">
         <p>
-            For listings in Canada, the trademarks REALTOR®, REALTORS®, and the REALTOR® logo are controlled by The Canadian Real Estate Association (CREA) and
-            identify real estate professionals who are members of CREA. The trademarks MLS®, Multiple Listing Service® and the associated logos are owned by CREA
-            and identify the quality of services provided by real estate professionals who are members of CREA. Used under license.
+          {t('canadaInfo')}
         </p>
       </div>
       {/* Main Footer Row */}
@@ -51,7 +47,7 @@ const Footer = () => {
         <span className="font-bold text-4xl text-blue-700 flex items-center gap-2">
           Rent&Home
         </span>
-        <span className="italic text-2xl text-gray-700 ml-2">Follow US:</span>
+        <span className="italic text-2xl text-gray-700 ml-2">{t('followUs')}</span>
         <div className="flex gap-3 text-3xl ml-2">
           <a href="#" aria-label="Facebook" className="hover:text-blue-600"><FaFacebook /></a>
           <span className="text-gray-400">-</span>

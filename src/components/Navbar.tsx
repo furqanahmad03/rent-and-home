@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button } from './ui/button'
-import { Heart, User, LogOut, Eye, EyeOff, Mail, Lock, ChevronDown, LayoutDashboard, Settings, Globe } from "lucide-react";
+import { Heart, User, LogOut, Eye, EyeOff, Mail, Lock, ChevronDown, LayoutDashboard, Settings, Globe, Menu, X, Home, Search } from "lucide-react";
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -20,17 +20,22 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from './ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Separator } from "@/components/ui/separator"
 
 import toast, { Toaster } from 'react-hot-toast';
 
-const navLinks = [
-  { label: "All Properties", href: "/houses" },
-  { label: "Buy", href: "/houses?purpose=buy" },
-  { label: "Rent", href: "/houses?purpose=rent" },
-];
-
 const Navbar = () => {
   const t = useTranslations('navbar');
+  const { locale } = useParams();
+  const authT = useTranslations('auth');
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -40,9 +45,15 @@ const Navbar = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { label: "allProperties", href: `/${locale}/houses` },
+    { label: "buy", href: `/${locale}/houses?purpose=buy` },
+    { label: "rent", href: `/${locale}/houses?purpose=rent` },
+  ];
 
   // Language switcher logic
-  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -66,14 +77,14 @@ const Navbar = () => {
   }, []);
 
   const handleSignOut = () => {
-    const loadingToast = toast.loading('Signing you out...', {
+    const loadingToast = toast.loading(authT('signingOut'), {
       icon: '⏳',
     });
     
     // Small delay to show the loading state
     setTimeout(() => {
       toast.dismiss(loadingToast);
-      toast.success('Successfully signed out!', {
+      toast.success(authT('signedOut'), {
         icon: '👋',
         duration: 2000,
       });
@@ -87,7 +98,7 @@ const Navbar = () => {
     
     if (isSignUp) {
       // Show loading toast for sign up
-      const loadingToast = toast.loading('Creating your account...', {
+      const loadingToast = toast.loading(authT('creatingAccountLoading'), {
         icon: '⏳',
       });
       
@@ -103,13 +114,13 @@ const Navbar = () => {
         toast.dismiss(loadingToast);
         
         if (!response.ok) {
-          toast.error(data.error || "Registration failed", {
+          toast.error(data.error || authT('registrationFailed'), {
             icon: '❌',
             duration: 4000,
           });
         } else {
           // Auto sign in after successful registration
-          const signInToast = toast.loading('Signing you in automatically...', {
+          const signInToast = toast.loading(authT('signingInAuto'), {
             icon: '⏳',
           });
           
@@ -124,13 +135,13 @@ const Navbar = () => {
             toast.dismiss(signInToast);
             
             if (result?.error) {
-              toast.error("Account created but sign in failed. Please try signing in manually.", {
+              toast.error(authT('signInFailed'), {
                 icon: '⚠️',
                 duration: 4000,
               });
               setIsSignUp(false);
             } else {
-              toast.success("Account created and signed in successfully!", {
+              toast.success(authT('accountCreated'), {
                 icon: '🎉',
                 duration: 4000,
               });
@@ -141,7 +152,7 @@ const Navbar = () => {
             }
           } catch (signInError) {
             toast.dismiss(signInToast);
-            toast.error("Account created but sign in failed. Please try signing in manually.", {
+            toast.error(authT('signInFailed'), {
               icon: '⚠️',
               duration: 4000,
             });
@@ -160,7 +171,7 @@ const Navbar = () => {
       }
     } else {
       // Show loading toast for sign in
-      const loadingToast = toast.loading('Signing you in...', {
+      const loadingToast = toast.loading(authT('signingInLoading'), {
         icon: '⏳',
       });
       
@@ -176,7 +187,7 @@ const Navbar = () => {
         toast.dismiss(loadingToast);
         
         if (result?.error) {
-          toast.error("Invalid email or password", {
+          toast.error(authT('invalidCredentials'), {
             icon: '❌',
             duration: 4000,
           });
@@ -207,22 +218,142 @@ const Navbar = () => {
     <div className="relative z-50 max-w-7xl mx-auto">
       <header className="container mx-auto px-6 py-4">
         <nav className="flex items-center justify-between">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 px-4 z-[9999] overflow-y-scroll pb-5">
+                <SheetHeader className='px-0 mx-0'>
+                  <SheetTitle>{t('menu')}</SheetTitle>
+                  <SheetDescription>
+                    {t('menuDescription')}
+                  </SheetDescription>
+                </SheetHeader>
+                
+                <div className="space-y-6">
+                  {/* Navigation Links */}
+                  {session && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('navigation')}</h3>
+                      {navLinks.map((item) => (
+                        <Link
+                          key={item.label}
+                          href={item.href as string}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                        >
+                          {item.label === "allProperties" ? <Search className="h-4 w-4" /> :
+                           item.label === "buy" ? <Home className="h-4 w-4" /> :
+                           <Search className="h-4 w-4" />}
+                          {t(item.label)}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+
+                  <Separator />
+
+                  {/* User Menu */}
+                  {session ? (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('account')}</h3>
+                      <Link
+                        href={`/${locale}/dashboard`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                      >
+                        <LayoutDashboard className="h-4 w-4" />
+                        {t('dashboard')}
+                      </Link>
+                      <Link
+                        href={`/${locale}/profile`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                      >
+                        <User className="h-4 w-4" />
+                        {t('profile')}
+                      </Link>
+                      <Link
+                        href={`/${locale}/favorites`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors"
+                      >
+                        <Heart className="h-4 w-4" />
+                        {t('favorites')}
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleSignOut();
+                        }}
+                        className="flex items-center gap-3 px-3 py-2 text-sm text-destructive rounded-md hover:bg-destructive/10 transition-colors w-full text-left"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        {t('signOut')}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('account')}</h3>
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setOpen(true);
+                        }}
+                        className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors w-full text-left"
+                      >
+                        <User className="h-4 w-4" />
+                        {t('signIn')}
+                      </button>
+                    </div>
+                  )}
+
+                  <Separator />
+
+                  {/* Language Switcher */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('language')}</h3>
+                    {languages.map((language) => (
+                      <button
+                        key={language.code}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          handleLanguageChange(language.code);
+                        }}
+                        className={`flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors w-full text-left ${
+                          locale === language.code 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'hover:bg-accent'
+                        }`}
+                      >
+                        <Globe className="h-4 w-4" />
+                        {language.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold text-blue-600">
+          <Link href={`/${locale}`} className="text-2xl font-bold text-blue-600">
             Rent&Home
           </Link>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
             {session && navLinks.map((item) => (
               <Link
                 key={item.label}
-                href={item.href}
+                href={item.href as string}
                 className="text-black font-medium px-2 py-2 rounded-md transition-colors hover:text-blue-600"
               >
-                {item.label === "Buy" ? t('buy') : 
-                 item.label === "Rent" ? t('rent') : 
-                 item.label}
+                {t(item.label)}
               </Link>
             ))}
           </div>
@@ -255,7 +386,7 @@ const Navbar = () => {
               <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
             ) : session ? (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger asChild className='hidden md:block'>
                   <Button variant="ghost" size="sm" className="h-10 w-10 rounded-full p-0 bg-blue-600 border-blue-600 hover:bg-blue-700">
                     <User className="h-5 w-5 text-white" />
                   </Button>
@@ -278,19 +409,19 @@ const Navbar = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center gap-2 w-full">
+                    <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 w-full">
                       <LayoutDashboard className="h-4 w-4" />
                       {t('dashboard')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center gap-2 w-full">
+                    <Link href={`/${locale}/profile`} className="flex items-center gap-2 w-full">
                       <User className="h-4 w-4" />
                       {t('profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/favorites" className="flex items-center gap-2 w-full">
+                    <Link href={`/${locale}/favorites`} className="flex items-center gap-2 w-full">
                       <Heart className="h-4 w-4" />
                       {t('favorites')}
                     </Link>
@@ -313,19 +444,19 @@ const Navbar = () => {
                 <AlertDialogContent className="max-w-md">
                   <AlertDialogHeader>
                     <AlertDialogTitle className="text-center">
-                      {isSignUp ? "Create your account" : "Sign in to your account"}
+                      {isSignUp ? authT('createAccount') : authT('signInAccount')}
                     </AlertDialogTitle>
                     <AlertDialogDescription className="text-center">
                       {isSignUp
-                        ? "Join Rent&Home to save your favorite properties."
-                        : "Access your favorite properties."}
+                        ? authT('joinDescription')
+                        : authT('accessDescription')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <form onSubmit={handleAuth} className="space-y-6 mt-2">
                     {isSignUp && (
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                          Full Name
+                          {authT('fullName')}
                         </label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -337,14 +468,14 @@ const Navbar = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="pl-10"
-                            placeholder="Enter your full name"
+                            placeholder={authT('enterFullName')}
                           />
                         </div>
                       </div>
                     )}
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email address
+                        {authT('emailAddress')}
                       </label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -357,13 +488,13 @@ const Navbar = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="pl-10"
-                          placeholder="Enter your email"
+                          placeholder={authT('enterEmail')}
                         />
                       </div>
                     </div>
                     <div>
                       <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                        Password
+                        {authT('password')}
                       </label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -376,7 +507,7 @@ const Navbar = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="pl-10 pr-10"
-                          placeholder={isSignUp ? "Create a password" : "Enter your password"}
+                          placeholder={isSignUp ? authT('createPassword') : authT('enterPassword')}
                         />
                         <button
                           type="button"
@@ -394,16 +525,16 @@ const Navbar = () => {
                     >
                       {isLoading
                         ? isSignUp
-                          ? "Creating account..."
-                          : "Signing in..."
+                          ? authT('creatingAccount')
+                          : authT('signingIn')
                         : isSignUp
-                          ? "Create account"
+                          ? authT('createAccountButton')
                           : t('signIn')}
                     </Button>
                     <div className="text-center text-sm text-gray-600">
                       {isSignUp ? (
                         <>
-                          Already have an account?{' '}
+                          {authT('alreadyHaveAccount')}{' '}
                           <button
                             type="button"
                             className="text-blue-600 hover:text-blue-500 underline"
@@ -416,7 +547,7 @@ const Navbar = () => {
                         </>
                       ) : (
                         <>
-                          Don&apos;t have an account?{' '}
+                          {authT('dontHaveAccount')}{' '}
                           <button
                             type="button"
                             className="text-blue-600 hover:text-blue-500 underline"
@@ -424,7 +555,7 @@ const Navbar = () => {
                               setIsSignUp(true);
                             }}
                           >
-                            Sign up
+                            {authT('signUp')}
                           </button>
                         </>
                       )}
@@ -435,6 +566,8 @@ const Navbar = () => {
             )}
           </div>
         </nav>
+
+
       </header>
     </div>
   );
