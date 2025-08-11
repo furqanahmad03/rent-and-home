@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { BedDouble, Bath, Ruler, MapPin, Calendar, Eye } from "lucide-react";
+import { BedDouble, Bath, Ruler, MapPin, Calendar, Eye, Router } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
 import { useTranslations } from 'next-intl';
+import { useRouter } from "next/navigation";
 
 // Define the type for a house listing
 interface House {
@@ -103,7 +104,7 @@ export default function Home() {
   const t = useTranslations('homepage');
   const [carouselHouses, setCarouselHouses] = useState<House[]>([]);
   const { data: session } = useSession();
-
+  const router = useRouter();
   useEffect(() => {
     
     async function fetchHouses() {
@@ -237,7 +238,7 @@ export default function Home() {
                                 return;
                               }
                               if (house.homeStatus !== 'RECENTLY_SOLD') {
-                                window.location.href = `/houses/${house.id}`;
+                                router.push(`/houses/${house.id}`);
                               }
                             }}
                             className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2.5 rounded-md shadow-sm hover:shadow-md transition-all duration-300 group-hover:scale-101 text-xs flex items-center justify-center ${house.homeStatus === 'RECENTLY_SOLD' ? 'opacity-60 cursor-not-allowed' : ''}`}
