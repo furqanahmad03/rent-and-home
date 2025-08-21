@@ -135,8 +135,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const houseId = searchParams.get('houseId');
+    const body = await request.json();
+    const { houseId } = body;
 
     if (!houseId) {
       return NextResponse.json(

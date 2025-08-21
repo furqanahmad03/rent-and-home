@@ -341,7 +341,7 @@ function ListingPageContent() {
                 {t('filters')}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="max-w-lg">
+            <AlertDialogContent className="max-w-lg max-h-[80vh] overflow-y-auto z-[1000]">
               <AlertDialogHeader>
                 <AlertDialogTitle>{t('filterProperties')}</AlertDialogTitle>
                 <AlertDialogDescription>
