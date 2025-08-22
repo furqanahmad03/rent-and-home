@@ -13,28 +13,25 @@ const Footer = () => {
       {/* Legal/Disclaimer Section */}
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base mb-6">
         <p>
-          {t('accessibilityDescription')}
+          {t('accessibilityDescription')}. {t('letUsKnow')}
         </p>
-        <Link href="#" className="text-blue-600 underline">
-          {t('letUsKnow')}
-        </Link>
       </div>
 
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base mb-6">
         <p>
           {t('brokerageInfo')}
         </p>
-        <Link href="#" className="text-blue-600 underline">
+        <p>
           {t('newYorkProcedures')}
-        </Link>
-        <Link href="#" className="text-blue-600 underline">
+        </p>
+        <p>
           {t('newYorkHousing')}
-        </Link>
+        </p>
         <p>
           {t('trecInfo')}
         </p>
         <p className="mb-4">{t('californiaDre')}</p>
-        <Link href="#" className="text-blue-600 underline text-base">{t('contactBrokerage')}</Link>
+        <p className="underline text-base">{t('contactBrokerage')}</p>
       </div>
 
       <div className="text-sm max-w-5xl mx-auto px-4 text-gray-500 text-base my-6">

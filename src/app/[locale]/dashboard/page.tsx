@@ -113,7 +113,7 @@ const initialForm: HouseForm = {
   homeType: "",
   homeStatus: "FOR_SALE",
   description: "",
-  currency: "USD",
+  currency: "$",
   zpid: "",
   longitude: "",
   latitude: "",
@@ -192,6 +192,14 @@ export default function DashboardPage() {
   const handleAddHouse = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    if(addForm.description.trim().length < 50) {
+      toast.error(t('descriptionTooShort'), {
+        icon: '❌',
+        duration: 4000,
+      });
+      setIsSubmitting(false);
+      return;
+    }
     try {
       // Prepare multipart form data
       const formData = new FormData();

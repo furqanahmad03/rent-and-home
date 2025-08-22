@@ -215,7 +215,8 @@
     "errorUpdatingHouse": "Error updating house: {error}",
     "failedToUpdateHouse": "Failed to update house. Please try again.",
     "errorDeletingHouse": "Error deleting house: {error}",
-    "failedToDeleteHouse": "Failed to delete house. Please try again."
+    "failedToDeleteHouse": "Failed to delete house. Please try again.",
+    "descriptionTooShort": "Description must be at least 50 characters long"
   },
   "profile": {
     "title": "Profile",

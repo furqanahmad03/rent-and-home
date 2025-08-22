@@ -469,7 +469,7 @@ export default function ListingDetailPage() {
           <div className="flex items-center gap-3"><Ruler className="w-5 h-5 text-purple-600" /><span className="font-semibold">{t('livingArea')}:</span> {house.livingArea.toLocaleString()} {t('sqft')}</div>
           <div className="flex items-center gap-3"><BedDouble className="w-5 h-5 text-blue-600" /><span className="font-semibold">{t('bedrooms')}:</span> {house.bedrooms}</div>
           <div className="flex items-center gap-3"><Bath className="w-5 h-5 text-green-600" /><span className="font-semibold">{t('bathrooms')}:</span> {house.bathrooms}</div>
-          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('yearBuilt')}:</span> {t('built', { year: house.yearBuilt })}</div>
+          <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('yearBuilt', { year: house.yearBuilt })}:</span> {t('built', { year: house.yearBuilt })}</div>
           <div className="flex items-center gap-3"><Star className="w-5 h-5 text-yellow-500" /><span className="font-semibold">{t('daysOnStickball')}:</span> {house.daysOnStickball ?? t('na')}</div>
           <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('datePosted')}:</span> {house.datePostedString}</div>
           <div className="flex items-center gap-3"><Calendar className="w-5 h-5 text-gray-600" /><span className="font-semibold">{t('createdAt')}:</span> {house.createdAt}</div>

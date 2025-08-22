@@ -215,7 +215,8 @@
     "errorUpdatingHouse": "Erro ao atualizar casa: {error}",
     "failedToUpdateHouse": "Falha ao atualizar casa. Por favor, tente novamente.",
     "errorDeletingHouse": "Erro ao excluir casa: {error}",
-    "failedToDeleteHouse": "Falha ao excluir casa. Por favor, tente novamente."
+    "failedToDeleteHouse": "Falha ao excluir casa. Por favor, tente novamente.",
+    "descriptionTooShort": "A descrição deve ter pelo menos 50 caracteres"
   },
   "profile": {
     "title": "Perfil",
